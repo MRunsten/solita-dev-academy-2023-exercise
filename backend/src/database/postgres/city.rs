@@ -92,5 +92,13 @@ async fn postgres_test_city(db: PgPool) -> DatabaseResult<()> {
     assert_eq!(city_name2.finnish, city2_by_name.name.finnish);
     assert_eq!(city_name2.swedish, city2_by_name.name.swedish);
 
+    Postgres::empty(&db).await?;
+
+    let city1_by_id_result = Postgres::get_city_by_id(&db, city_id1).await;
+    let city2_by_id_result = Postgres::get_city_by_id(&db, city_id2).await;
+
+    assert!(city1_by_id_result.is_err());
+    assert!(city2_by_id_result.is_err());
+
     Ok(())
 }

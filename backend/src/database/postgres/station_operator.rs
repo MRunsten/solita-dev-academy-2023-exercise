@@ -74,5 +74,13 @@ async fn test_station_operator(db: PgPool) -> DatabaseResult<()> {
     assert_eq!(operator_name2, operator2_by_id.name);
     assert_eq!(operator_name2, operator2_by_name.name);
 
+    Postgres::empty(&db).await?;
+
+    let operator1_by_id_result = Postgres::get_station_operator_by_id(&db, operator_id1).await;
+    let operator2_by_id_result = Postgres::get_station_operator_by_id(&db, operator_id2).await;
+
+    assert!(operator1_by_id_result.is_err());
+    assert!(operator2_by_id_result.is_err());
+
     Ok(())
 }
