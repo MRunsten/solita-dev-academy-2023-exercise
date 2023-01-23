@@ -9,8 +9,8 @@ pub type DatabaseResult<T> = Result<T, BoxedError>;
 
 #[async_trait]
 pub trait Database<T> {
-    async fn connect() -> Result<T, BoxedError>;
-    async fn initialize(db: &T) -> Result<(), BoxedError>;
+    async fn connect() -> DatabaseResult<T>;
+    async fn initialize(db: &T) -> DatabaseResult<()>;
 }
 
 #[async_trait]
