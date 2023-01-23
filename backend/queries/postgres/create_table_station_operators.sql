@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS station_operators (
+    operator_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    operator_name VARCHAR(255) NOT NULL
+);
