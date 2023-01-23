@@ -1,5 +1,6 @@
 mod database;
 mod model;
+mod unit;
 
 use std::error::Error;
 use dotenv::dotenv;
