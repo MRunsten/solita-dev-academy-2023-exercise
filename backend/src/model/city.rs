@@ -8,7 +8,7 @@ pub struct City {
     pub name: Name,
 }
 
-#[derive(Debug, sqlx::FromRow)]
+#[derive(Debug, Clone, sqlx::FromRow)]
 pub struct Name {
     pub finnish: String,
     pub swedish: String,
