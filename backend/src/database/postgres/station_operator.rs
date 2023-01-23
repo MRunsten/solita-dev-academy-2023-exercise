@@ -71,7 +71,7 @@ async fn test_station_operator(db: PgPool) -> DatabaseResult<()> {
     assert_eq!(operator_name1, operator1_by_id.name);
     assert_eq!(operator_name1, operator1_by_name.name);
 
-    assert_eq!(operator_name1, operator1_by_id.name);
+    assert_eq!(operator_name2, operator2_by_id.name);
     assert_eq!(operator_name2, operator2_by_name.name);
 
     Ok(())
