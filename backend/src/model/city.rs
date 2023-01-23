@@ -1,14 +1,12 @@
 pub type Id = i32;
 
-#[derive(Debug, sqlx::FromRow)]
+#[derive(Debug)]
 pub struct City {
     pub id: Id,
-
-    #[sqlx(flatten)]
     pub name: Name,
 }
 
-#[derive(Debug, Clone, sqlx::FromRow)]
+#[derive(Debug, Clone)]
 pub struct Name {
     pub finnish: String,
     pub swedish: String,
