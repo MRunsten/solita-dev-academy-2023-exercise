@@ -37,5 +37,17 @@ impl Database<PgPool> for Postgres {
 
         Ok(())
     }
+
+    async fn empty(db: &PgPool) -> DatabaseResult<()> {
+        let _ = sqlx::query_file!("queries/postgres/drop_table_station_operators.sql")
+            .execute(db)
+            .await?;
+        
+        let _ = sqlx::query_file!("queries/postgres/drop_table_cities.sql")
+            .execute(db)
+            .await?;
+
+        Ok(())
+    }
 }
 
