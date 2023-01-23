@@ -3,16 +3,15 @@ use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::env;
 
-use crate::database::Database;
+use crate::database::{Database, DatabaseResult};
 use crate::model::city;
 use crate::model::city::City;
-use crate::BoxedError;
 
 pub struct Postgres;
 
 #[async_trait]
 impl Database<PgPool> for Postgres {
-    async fn connect() -> Result<PgPool, BoxedError> {
+    async fn connect() -> DatabaseResult<PgPool> {
         let postgres_address =
             env::var("DATABASE_URL").expect("Environment variable DATABASE_URL was undefined");
 
@@ -26,7 +25,7 @@ impl Database<PgPool> for Postgres {
         Ok(pool)
     }
 
-    async fn initialize(db: &PgPool) -> Result<(), BoxedError> {
+    async fn initialize(db: &PgPool) -> DatabaseResult<()> {
         let _ = sqlx::query_file!("queries/postgres/create_table_cities.sql")
             .execute(db)
             .await?;
@@ -34,7 +33,7 @@ impl Database<PgPool> for Postgres {
         Ok(())
     }
 
-    async fn add_city(db: &PgPool, name: city::Name) -> Result<city::Id, BoxedError> {
+    async fn add_city(db: &PgPool, name: city::Name) -> DatabaseResult<city::Id> {
         let city_id = sqlx::query!(
             "INSERT INTO cities (name_finnish, name_swedish) VALUES ($1, $2) RETURNING city_id",
             &name.finnish,
@@ -47,7 +46,7 @@ impl Database<PgPool> for Postgres {
         Ok(city_id)
     }
 
-    async fn get_city_by_id(db: &PgPool, city_id: city::Id) -> Result<City, BoxedError> {
+    async fn get_city_by_id(db: &PgPool, city_id: city::Id) -> DatabaseResult<City> {
         let record = sqlx::query!(
             "SELECT name_finnish, name_swedish FROM cities WHERE city_id = $1",
             &city_id
@@ -64,7 +63,7 @@ impl Database<PgPool> for Postgres {
         })
     }
 
-    async fn get_city_by_name(db: &PgPool, city_name: city::Name) -> Result<City, BoxedError> {
+    async fn get_city_by_name(db: &PgPool, city_name: city::Name) -> DatabaseResult<City> {
         let city_id = sqlx::query!(
             "SELECT city_id FROM cities WHERE name_finnish = $1 and name_swedish = $2",
             &city_name.finnish,
@@ -82,7 +81,7 @@ impl Database<PgPool> for Postgres {
 }
 
 #[sqlx::test]
-async fn postgres_test_city(db: PgPool) -> Result<(), BoxedError> {
+async fn postgres_test_city(db: PgPool) -> DatabaseResult<()> {
     Postgres::initialize(&db).await?;
 
     let city_name1 = city::Name {
