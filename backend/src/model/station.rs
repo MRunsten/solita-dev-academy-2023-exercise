@@ -1,7 +1,10 @@
+use serde::Serialize;
 use crate::model::{city, station_operator};
 use crate::unit::Coordinate;
 
-#[derive(Debug, Clone)]
+pub type Capacity = i32;
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct Id(i32);
 
 impl ToString for Id {
@@ -10,22 +13,26 @@ impl ToString for Id {
     }
 }
 
-pub type Capacity = i32;
+impl From<&Id> for i32 {
+    fn from(id: &Id) -> Self {
+        id.0.clone()
+    }
+}
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Name {
     pub finnish: String,
     pub swedish: String,
     pub english: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Address {
     pub finnish: String,
     pub swedish: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Station {
     pub id: Id,
 
