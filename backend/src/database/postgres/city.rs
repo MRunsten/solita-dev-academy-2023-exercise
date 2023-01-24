@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 
-use crate::database::DatabaseResult;
+use crate::database::{DatabaseError, DatabaseResult};
 use crate::model::city;
 use crate::model::city::City;
 
@@ -48,6 +48,25 @@ pub async fn get_by_name(db: &PgPool, city_name: city::Name) -> DatabaseResult<C
         id: city_id,
         name: city_name,
     })
+}
+
+pub async fn get_or_add_by_name(db: &PgPool, city_name: city::Name) -> DatabaseResult<City> {
+    let result = get_by_name(db, city_name.clone()).await;
+
+    let city = match result {
+        Ok(city) => city,
+        Err(DatabaseError::RowNotFound) => {
+            let new_city = City {
+                id: add(db, city_name.clone()).await?,
+                name: city_name,
+            };
+
+            new_city
+        }
+        Err(e) => return Err(e)
+    };
+
+    Ok(city)
 }
 
 #[sqlx::test]
