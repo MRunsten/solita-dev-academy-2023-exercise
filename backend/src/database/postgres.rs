@@ -9,6 +9,7 @@ use std::env;
 use crate::database::DatabaseResult;
 
 pub type Database = PgPool;
+pub type DatabaseError = sqlx::Error;
 
 pub async fn connect() -> DatabaseResult<Database> {
     let postgres_address =
