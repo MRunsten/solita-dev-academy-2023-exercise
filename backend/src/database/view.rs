@@ -42,3 +42,9 @@ pub struct Station {
     pub total_starting_journeys: u64,
     pub total_ending_journeys: u64,
 }
+
+#[derive(Debug)]
+pub struct StationListParams {
+    pub order_by: StationListOrder,
+    pub order_direction: OrderDirection,
+}
