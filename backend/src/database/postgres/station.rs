@@ -6,7 +6,6 @@ use crate::model::{city, station, station_operator};
 use crate::unit::{Coordinate, Latitude, Longitude};
 
 pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult<u64> {
-
     let mut csv_writer = csv::Writer::from_writer(vec![]);
 
     for station in stations.iter() {
@@ -29,7 +28,14 @@ pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult
             station.capacity,
         );
 
-        csv_writer.serialize(tmp_tuple)?;
+        match csv_writer.serialize(tmp_tuple) {
+            Ok(_) => (),
+            Err(e) => {
+                println!("warning: csv writer could not serialize stations: {}", e);
+
+                return Ok(0);
+            }
+        };
     }
 
     csv_writer.flush()?;
@@ -57,7 +63,16 @@ pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult
         WITH (FORMAT CSV)"#,
     ).await?;
 
-    copy.send(csv_writer.into_inner()?).await?;
+    let csv_data = match csv_writer.into_inner() {
+        Ok(csv_data) => csv_data,
+        Err(e) => {
+            println!("warning: csv writer could not create a byte array: {}", e);
+
+            return Ok(0);
+        }
+    };
+
+    copy.send(csv_data).await?;
     let rows = copy.finish().await?;
 
     Ok(rows)
