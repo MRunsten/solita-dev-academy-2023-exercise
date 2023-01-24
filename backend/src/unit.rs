@@ -1,3 +1,5 @@
+pub type Meters = f64;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Latitude {
     North(f64),
