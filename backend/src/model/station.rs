@@ -5,7 +5,7 @@ use crate::unit::Coordinate;
 pub type Capacity = i32;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
-pub struct Id(i32);
+pub struct Id(pub i32);
 
 impl ToString for Id {
     fn to_string(&self) -> String {
