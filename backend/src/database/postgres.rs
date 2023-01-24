@@ -27,6 +27,26 @@ pub async fn connect() -> DatabaseResult<Database> {
 }
 
 pub async fn initialize(db: &Database) -> DatabaseResult<()> {
+
+    // Unfortunately at least Postgres doesn't support conditional
+    // view generation (..IF NOT EXISTS, ... OR REPLACE). However,
+    // views are quite fast to re-create.
+    drop_views(db).await?;
+
+    create_tables(db).await?;
+    create_views(db).await?;
+
+    Ok(())
+}
+
+pub async fn empty(db: &Database) -> DatabaseResult<()> {
+    drop_views(db).await?;
+    drop_tables(db).await?;
+
+    Ok(())
+}
+
+async fn create_tables(db: &Database) -> DatabaseResult<()> {
     let _ = sqlx::query_file!("queries/postgres/create_table_cities.sql")
         .execute(db)
         .await?;
@@ -46,7 +66,23 @@ pub async fn initialize(db: &Database) -> DatabaseResult<()> {
     Ok(())
 }
 
-pub async fn empty(db: &Database) -> DatabaseResult<()> {
+async fn create_views(db: &Database) -> DatabaseResult<()> {
+    let _ = sqlx::query_file!("queries/postgres/create_view_station.sql")
+        .execute(db)
+        .await?;
+
+    let _ = sqlx::query_file!("queries/postgres/create_view_station_list.sql")
+        .execute(db)
+        .await?;
+
+    let _ = sqlx::query_file!("queries/postgres/create_view_journey_list.sql")
+        .execute(db)
+        .await?;
+
+    Ok(())
+}
+
+async fn drop_tables(db: &Database) -> DatabaseResult<()> {
     let _ = sqlx::query_file!("queries/postgres/drop_table_journeys.sql")
         .execute(db)
         .await?;
@@ -60,6 +96,22 @@ pub async fn empty(db: &Database) -> DatabaseResult<()> {
         .await?;
 
     let _ = sqlx::query_file!("queries/postgres/drop_table_cities.sql")
+        .execute(db)
+        .await?;
+
+    Ok(())
+}
+
+async fn drop_views(db: &Database) -> DatabaseResult<()> {
+    let _ = sqlx::query_file!("queries/postgres/drop_view_station.sql")
+        .execute(db)
+        .await?;
+
+    let _ = sqlx::query_file!("queries/postgres/drop_view_station_list.sql")
+        .execute(db)
+        .await?;
+
+    let _ = sqlx::query_file!("queries/postgres/drop_view_journey_list.sql")
         .execute(db)
         .await?;
 
