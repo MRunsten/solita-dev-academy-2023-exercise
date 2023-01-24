@@ -6,7 +6,7 @@ pub struct City {
     pub name: Name,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Name {
     pub finnish: String,
     pub swedish: String,
