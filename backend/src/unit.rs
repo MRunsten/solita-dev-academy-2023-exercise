@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Latitude {
     North(f64),
     South(f64),
@@ -13,7 +13,7 @@ impl From<&Latitude> for f64 {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Longitude {
     East(f64),
     West(f64),
@@ -28,7 +28,7 @@ impl From<&Longitude> for f64 {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Coordinate {
     pub latitude: Latitude,
     pub longitude: Longitude,
