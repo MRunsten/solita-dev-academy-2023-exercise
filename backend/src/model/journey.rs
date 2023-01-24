@@ -1,5 +1,5 @@
 use crate::model::station;
-use crate::unit::Meters;
+use crate::unit::{Meters, Seconds};
 
 pub type Id = i64;
 
@@ -14,7 +14,7 @@ pub struct Journey {
     pub return_station_id: station::Id,
 
     pub distance: Meters,
-    pub duration: chrono::Duration,
+    pub duration: Seconds,
 }
 
 impl Journey {

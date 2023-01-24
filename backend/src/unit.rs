@@ -1,4 +1,5 @@
 pub type Meters = f64;
+pub type Seconds = f64;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Latitude {
