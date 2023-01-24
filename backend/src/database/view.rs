@@ -23,13 +23,11 @@ pub struct JourneyListItemStation {
 pub struct StationListItem {
     pub station_id: station::Id,
 
-    pub city: city::Name,
+    pub city_name: city::Name,
     pub operator_name: station_operator::Name,
 
     pub name: station::Name,
-    pub address: station::Address,
-    pub location: Coordinate,
-    pub capacity: station::Capacity
+    pub capacity: station::Capacity,
 }
 
 #[derive(Debug)]
