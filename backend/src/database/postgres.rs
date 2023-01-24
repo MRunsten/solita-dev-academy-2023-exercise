@@ -1,4 +1,5 @@
 pub mod city;
+pub mod journey;
 pub mod station;
 pub mod station_operator;
 
@@ -38,10 +39,18 @@ pub async fn initialize(db: &Database) -> DatabaseResult<()> {
         .execute(db)
         .await?;
 
+    let _ = sqlx::query_file!("queries/postgres/create_table_journeys.sql")
+        .execute(db)
+        .await?;
+
     Ok(())
 }
 
 pub async fn empty(db: &Database) -> DatabaseResult<()> {
+    let _ = sqlx::query_file!("queries/postgres/drop_table_journeys.sql")
+        .execute(db)
+        .await?;
+
     let _ = sqlx::query_file!("queries/postgres/drop_table_stations.sql")
         .execute(db)
         .await?;
