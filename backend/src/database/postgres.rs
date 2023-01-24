@@ -1,4 +1,5 @@
 pub mod city;
+pub mod station;
 pub mod station_operator;
 
 use sqlx::PgPool;
@@ -30,10 +31,18 @@ pub async fn initialize(db: &PgPool) -> DatabaseResult<()> {
         .execute(db)
         .await?;
 
+    let _ = sqlx::query_file!("queries/postgres/create_table_stations.sql")
+        .execute(db)
+        .await?;
+
     Ok(())
 }
 
 pub async fn empty(db: &PgPool) -> DatabaseResult<()> {
+    let _ = sqlx::query_file!("queries/postgres/drop_table_stations.sql")
+        .execute(db)
+        .await?;
+
     let _ = sqlx::query_file!("queries/postgres/drop_table_station_operators.sql")
         .execute(db)
         .await?;
