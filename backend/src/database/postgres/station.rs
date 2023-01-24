@@ -1,6 +1,8 @@
-use sqlx::PgPool;
+use sqlx::postgres::PgRow;
+use sqlx::{PgPool, Row};
 
 use crate::database::DatabaseResult;
+use crate::model::city::Id;
 use crate::model::station::Station;
 use crate::model::{city, station, station_operator};
 use crate::unit::{Coordinate, Latitude, Longitude};
@@ -11,20 +13,15 @@ pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult
     for station in stations.iter() {
         let tmp_tuple = (
             &station.id,
-
             &station.city_id,
             &station.operator_id,
-
             &station.name.finnish,
             &station.name.swedish,
             &station.name.english,
-
             &station.address.finnish,
             &station.address.swedish,
-
             f64::from(&station.location.latitude),
             f64::from(&station.location.longitude),
-
             station.capacity,
         );
 
@@ -40,7 +37,9 @@ pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult
 
     csv_writer.flush()?;
 
-    let mut copy = db.copy_in_raw(r#"
+    let mut copy = db
+        .copy_in_raw(
+            r#"
         COPY stations (
             station_id,
 
@@ -61,7 +60,8 @@ pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult
         )
         FROM STDIN
         WITH (FORMAT CSV)"#,
-    ).await?;
+        )
+        .await?;
 
     let csv_data = match csv_writer.into_inner() {
         Ok(csv_data) => csv_data,
@@ -78,8 +78,64 @@ pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult
     Ok(rows)
 }
 
+pub async fn get_all(db: &PgPool) -> DatabaseResult<Vec<Station>> {
+    let stations = sqlx::query!(
+        r#"
+        SELECT
+
+        station_id,
+
+        city_id,
+        operator_id,
+
+        name_finnish,
+        name_swedish,
+        name_english,
+
+        address_finnish,
+        address_swedish,
+
+        latitude_north,
+        longitude_east,
+
+        capacity
+
+        FROM stations
+        "#,
+    )
+    .map(|record| Station {
+        id: station::Id(record.station_id),
+
+        city_id: record.city_id,
+        operator_id: record.operator_id,
+
+        name: station::Name {
+            finnish: record.name_finnish,
+            swedish: record.name_swedish,
+            english: record.name_english,
+        },
+
+        address: station::Address {
+            finnish: record.address_finnish,
+            swedish: record.address_swedish,
+        },
+
+        location: Coordinate {
+            latitude: Latitude::North(record.latitude_north),
+            longitude: Longitude::East(record.longitude_east),
+        },
+
+        capacity: record.capacity,
+    })
+    .fetch_all(db)
+    .await?;
+
+    Ok(stations)
+}
+
 pub async fn get_by_id(db: &PgPool, station_id: station::Id) -> DatabaseResult<Station> {
-    let record = sqlx::query!(r#"
+    let record = sqlx::query!(
+        r#"
         SELECT
 
         city_id,
@@ -179,7 +235,7 @@ async fn test_station(db: PgPool) -> DatabaseResult<()> {
 fn get_mock_station(
     station_id: station::Id,
     city_id: city::Id,
-    operator_id: station_operator::Id
+    operator_id: station_operator::Id,
 ) -> Station {
     Station {
         id: station_id.clone(),
