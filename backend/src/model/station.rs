@@ -4,7 +4,7 @@ use crate::unit::Coordinate;
 
 pub type Capacity = i32;
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize)]
 pub struct Id(pub i32);
 
 impl ToString for Id {
