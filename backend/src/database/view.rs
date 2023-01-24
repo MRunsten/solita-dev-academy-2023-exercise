@@ -48,6 +48,25 @@ pub struct Station {
 
 #[derive(Debug)]
 pub struct StationListParams {
+
+    // Note: Depending on how much dynamicity is required the
+    // `order_*` parameters may have to be refactored to a single data structure
+    // as for example the postgres ORDER BY command supports multiple columns, each with differing
+    // directionality.
     pub order_by: StationListOrder,
     pub order_direction: OrderDirection,
+}
+
+#[derive(Debug)]
+pub struct JourneyListParams {
+
+    // Note: Depending on how much dynamicity is required the
+    // `order_*` parameters may have to be refactored to a single data structure
+    // as for example the postgres ORDER BY command supports multiple columns, each with differing
+    // directionality.
+    pub order_by: JourneyListOrder,
+    pub order_direction: OrderDirection,
+
+    pub page: u32,
+    pub limit: u32,
 }
