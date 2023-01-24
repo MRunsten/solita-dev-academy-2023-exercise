@@ -16,3 +16,23 @@ pub struct Journey {
     pub distance: Meters,
     pub duration: chrono::Duration,
 }
+
+impl Journey {
+    pub fn departure_before_return(&self) -> bool {
+        self.departure_date < self.return_date
+    }
+
+    pub fn duration_over(&self, limit: chrono::Duration) -> bool {
+        self.duration >= limit
+    }
+
+    pub fn distance_over(&self, limit: Meters) -> bool {
+        self.distance >= limit
+    }
+
+    pub fn is_valid(&self) -> bool {
+        self.departure_before_return()
+            && self.duration_over_or_exactly(chrono::Duration::seconds(10))
+            && self.distance_over_or_exactly(Meters(10))
+    }
+}
