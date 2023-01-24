@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 
-use crate::database::DatabaseResult;
+use crate::database::{DatabaseError, DatabaseResult};
 use crate::model::station_operator;
 use crate::model::station_operator::StationOperator;
 
@@ -43,6 +43,26 @@ pub async fn get_by_name(db: &PgPool, operator_name: station_operator::Name) -> 
         id: operator_id,
         name: operator_name,
     })
+}
+
+pub async fn get_or_add_by_name(db: &PgPool, operator_name: station_operator::Name) -> DatabaseResult<StationOperator> {
+    let result = get_by_name(db, operator_name.clone()).await;
+
+    let station_operator = match result {
+        Ok(station_operator) => station_operator,
+        Err(DatabaseError::RowNotFound) => {
+
+            let new_station_operator = StationOperator {
+                id: add(db, operator_name.clone()).await?,
+                name: operator_name,
+            };
+
+            new_station_operator
+        }
+        Err(e) => return Err(e)
+    };
+
+    Ok(station_operator)
 }
 
 #[sqlx::test]
