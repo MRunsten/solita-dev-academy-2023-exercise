@@ -8,7 +8,9 @@ use std::env;
 
 use crate::database::DatabaseResult;
 
-pub async fn connect() -> DatabaseResult<PgPool> {
+pub type Database = PgPool;
+
+pub async fn connect() -> DatabaseResult<Database> {
     let postgres_address =
         env::var("DATABASE_URL").expect("Environment variable DATABASE_URL was undefined");
 
@@ -22,7 +24,7 @@ pub async fn connect() -> DatabaseResult<PgPool> {
     Ok(pool)
 }
 
-pub async fn initialize(db: &PgPool) -> DatabaseResult<()> {
+pub async fn initialize(db: &Database) -> DatabaseResult<()> {
     let _ = sqlx::query_file!("queries/postgres/create_table_cities.sql")
         .execute(db)
         .await?;
@@ -38,7 +40,7 @@ pub async fn initialize(db: &PgPool) -> DatabaseResult<()> {
     Ok(())
 }
 
-pub async fn empty(db: &PgPool) -> DatabaseResult<()> {
+pub async fn empty(db: &Database) -> DatabaseResult<()> {
     let _ = sqlx::query_file!("queries/postgres/drop_table_stations.sql")
         .execute(db)
         .await?;
