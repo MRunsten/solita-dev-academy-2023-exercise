@@ -65,11 +65,15 @@ async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
 
     tracing::info!("Updating stations");
     let stations_csv = download_url(stations_url.as_str()).await?;
+
+    tracing::info!("Updating stations database");
     datasource::station::csv::update(&db, stations_csv.as_bytes()).await?;
 
     tracing::info!("Updating journeys");
     for journey_url in journey_urls.split(",").collect::<Vec<&str>>().iter() {
         let journey_csv = download_url(journey_url).await?;
+
+        tracing::info!("Updating journeys database");
         datasource::journey::csv::update(&db, journey_csv.as_bytes()).await?;
     }
 
@@ -79,5 +83,9 @@ async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
 
 async fn download_url(url: &str) -> Result<String, BoxedError> {
     tracing::info!("Downloading {url} (May take a while depending on file size and internet speed).");
-    Ok(reqwest::get(url).await?.text().await?)
+
+    let body = reqwest::get(url).await?.text().await?;
+    tracing::info!("Downloading completed.");
+
+    Ok(body)
 }
