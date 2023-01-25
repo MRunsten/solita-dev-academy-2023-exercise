@@ -2,21 +2,28 @@ use crate::database;
 use crate::database::{Database, DatabaseResult};
 use crate::datasource::DataSourceResult;
 use crate::model::journey::{Journey, JourneyInsert};
-use chrono::NaiveDateTime;
-use serde::Deserialize;
+use chrono::{NaiveDate, NaiveDateTime};
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::io::Read;
 use crate::model::station;
 
 use crate::unit::{Meters, Seconds};
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+enum PossibleDateTypes {
+    OnlyDate(NaiveDate),
+    WithTime(NaiveDateTime)
+}
+
 #[derive(Deserialize, Debug)]
 pub struct CsvBicycleJourney {
     #[serde(rename = "Departure")]
-    departure_date: NaiveDateTime,
+    departure_date: PossibleDateTypes,
 
     #[serde(rename = "Return")]
-    return_date: NaiveDateTime,
+    return_date: PossibleDateTypes,
 
     #[serde(rename = "Departure station id")]
     departure_station_id: i32,
@@ -25,7 +32,7 @@ pub struct CsvBicycleJourney {
     return_station_id: i32,
     // Note: Field "Return station name" is unused.
     #[serde(rename = "Covered distance (m)")]
-    covered_distance: Meters,
+    covered_distance: Option<Meters>,
 
     #[serde(rename = "Duration (sec.)")]
     duration: Seconds,
@@ -35,15 +42,25 @@ pub async fn update<Source>(db: &Database, source: Source) -> DataSourceResult<(
 where
     Source: Read + Sync + Send,
 {
-    let csv_journeys = csv::Reader::from_reader(source)
+    let csv_journeys = csv::ReaderBuilder::new()
+        // .quote_style(csv::QuoteStyle::Necessary)
+        // .flexible(true)
+        .from_reader(source)
         .deserialize()
-        .collect::<Result<Vec<CsvBicycleJourney>, csv::Error>>()?;
+        .collect::<Vec<Result<CsvBicycleJourney, csv::Error>>>();
 
     let mut valid_stations = get_valid_stations_ids(&db).await?;
 
     let mut parsed_journeys = Vec::new();
 
-    for csv_journey in csv_journeys.into_iter() {
+    for maybe_csv_journey in csv_journeys.into_iter() {
+        if let Err(err) = maybe_csv_journey {
+            tracing::warn!("(skipping csv row): {err}");
+            continue
+        }
+
+        let csv_journey = maybe_csv_journey.unwrap();
+
         let departure_station_id = station::Id(csv_journey.departure_station_id);
         let return_station_id = station::Id(csv_journey.return_station_id);
 
@@ -55,14 +72,31 @@ where
             continue;
         }
 
+        let covered_distance = match csv_journey.covered_distance {
+            Some(distance) => distance,
+            None => {
+                continue;
+            }
+        };
+
+        let departure_date = match csv_journey.departure_date {
+            PossibleDateTypes::OnlyDate(date) => date.and_hms_opt(0, 0, 0).unwrap(),
+            PossibleDateTypes::WithTime(datetime) => datetime,
+        };
+
+        let return_date = match csv_journey.return_date {
+            PossibleDateTypes::OnlyDate(date) => date.and_hms_opt(0, 0, 0).unwrap(),
+            PossibleDateTypes::WithTime(datetime) => datetime,
+        };
+
         let journey_insert = JourneyInsert {
-            departure_date: csv_journey.departure_date,
+            departure_date,
             departure_station_id,
 
-            return_date: csv_journey.return_date,
+            return_date,
             return_station_id,
 
-            distance: csv_journey.covered_distance,
+            distance: covered_distance,
             duration: csv_journey.duration,
         };
 
