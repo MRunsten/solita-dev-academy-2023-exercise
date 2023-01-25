@@ -7,6 +7,7 @@ use crate::BoxedError;
 use crate::database::Database;
 
 pub mod station;
+pub mod journey;
 
 pub async fn run(db: Database) -> Result<(), BoxedError> {
     tracing_subscriber::fmt::init();
@@ -28,11 +29,16 @@ pub async fn run(db: Database) -> Result<(), BoxedError> {
 }
 
 fn define_routes(db: Database) -> Router {
+
     let station_api = Router::new()
         .route("/:id", get(station::single))
         .route("/list", get(station::list));
 
+    let journey_api = Router::new()
+        .route("/list", get(journey::list));
+
     let api = Router::new()
+        .nest("/journey", journey_api)
         .nest("/station", station_api);
 
     let app = Router::new()
