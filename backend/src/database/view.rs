@@ -1,3 +1,4 @@
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use crate::model::{city, station, station_operator};
 use crate::unit::{Kilometers, Minutes};
@@ -7,8 +8,8 @@ pub use crate::database::postgres_view::*;
 
 #[derive(Debug, Serialize)]
 pub struct JourneyListItem {
-    pub departure_date: chrono::NaiveDateTime,
-    pub return_date: chrono::NaiveDateTime,
+    pub departure_date: chrono::DateTime<Utc>,
+    pub return_date: chrono::DateTime<Utc>,
 
     pub departure_station: JourneyListItemStation,
     pub return_station: JourneyListItemStation,

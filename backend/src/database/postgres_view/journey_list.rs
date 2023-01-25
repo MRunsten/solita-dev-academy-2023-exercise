@@ -1,3 +1,4 @@
+use chrono::Utc;
 use crate::database::view::JourneyListItemStation;
 use crate::database::{view, Database, DatabaseResult};
 use crate::station;
@@ -34,8 +35,8 @@ pub async fn journey_list(
 
     for row in rows.iter() {
         let journey_list_item = view::JourneyListItem {
-            departure_date: row.try_get("departure_date")?,
-            return_date: row.try_get("return_date")?,
+            departure_date: chrono::DateTime::from_utc(row.try_get("departure_date")?, Utc),
+            return_date: chrono::DateTime::from_utc(row.try_get("return_date")?, Utc),
 
             departure_station: JourneyListItemStation {
                 station_id: station::Id(row.try_get("departure_station_id")?),
