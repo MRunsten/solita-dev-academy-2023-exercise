@@ -21,15 +21,15 @@ async fn main() -> Result<(), BoxedError> {
 
     let db = database::connect().await?;
 
-    let reinitialize_database = env::var("REINITIALIZE_DATABASE")
-        .expect("Environment variable REINITIALIZE_DATABASE was undefined");
+    let reinitialize_database = env::var("RELOAD_DATABASE")
+        .expect("Environment variable RELOAD_DATABASE was undefined");
 
     match reinitialize_database.as_str() {
         "true" => empty_and_initialize_db(&db).await?,
         "false" => (),
         other => {
             tracing::error!(
-                "Invalid environment variable REINITIALIZE_DATABASE='{}', expected=true|false",
+                "Invalid environment variable RELOAD_DATABASE='{}', expected=true|false",
                 other
             );
         }
