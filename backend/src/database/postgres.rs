@@ -50,19 +50,19 @@ pub async fn empty(db: &Database) -> DatabaseResult<()> {
 }
 
 async fn create_tables(db: &Database) -> DatabaseResult<()> {
-    let _ = sqlx::query_file!("queries/postgres/create_table_cities.sql")
+    let _ = sqlx::query_file!("queries/postgres/01-create_table_cities.sql")
         .execute(db)
         .await?;
 
-    let _ = sqlx::query_file!("queries/postgres/create_table_station_operators.sql")
+    let _ = sqlx::query_file!("queries/postgres/02-create_table_station_operators.sql")
         .execute(db)
         .await?;
 
-    let _ = sqlx::query_file!("queries/postgres/create_table_stations.sql")
+    let _ = sqlx::query_file!("queries/postgres/03-create_table_stations.sql")
         .execute(db)
         .await?;
 
-    let _ = sqlx::query_file!("queries/postgres/create_table_journeys.sql")
+    let _ = sqlx::query_file!("queries/postgres/04-create_table_journeys.sql")
         .execute(db)
         .await?;
 
@@ -70,15 +70,15 @@ async fn create_tables(db: &Database) -> DatabaseResult<()> {
 }
 
 async fn create_views(db: &Database) -> DatabaseResult<()> {
-    let _ = sqlx::query_file!("queries/postgres/create_view_station.sql")
+    let _ = sqlx::query_file!("queries/postgres/11-create_view_journey_list.sql")
         .execute(db)
         .await?;
 
-    let _ = sqlx::query_file!("queries/postgres/create_view_station_list.sql")
+    let _ = sqlx::query_file!("queries/postgres/12-create_view_station.sql")
         .execute(db)
         .await?;
 
-    let _ = sqlx::query_file!("queries/postgres/create_view_journey_list.sql")
+    let _ = sqlx::query_file!("queries/postgres/13-create_view_station_list.sql")
         .execute(db)
         .await?;
 
