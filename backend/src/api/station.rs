@@ -56,7 +56,7 @@ pub async fn list(
             ).into_response()
         },
         Err(err) => {
-            tracing::trace!("{err}");
+            tracing::info!("{err}");
         }
     }
 
