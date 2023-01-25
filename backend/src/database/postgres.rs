@@ -30,14 +30,9 @@ pub async fn connect() -> DatabaseResult<Database> {
     Ok(pool)
 }
 pub async fn initialize(db: &Database) -> DatabaseResult<()> {
-
-    // Unfortunately at least Postgres doesn't support conditional
-    // view generation (..IF NOT EXISTS, ... OR REPLACE). However,
-    // views are quite fast to re-create.
-    drop_views(db).await?;
-
     create_tables(db).await?;
     create_views(db).await?;
+    create_indices(db).await?;
 
     Ok(())
 }
@@ -115,6 +110,18 @@ async fn drop_views(db: &Database) -> DatabaseResult<()> {
         .await?;
 
     let _ = sqlx::query_file!("queries/postgres/drop_view_journey_list.sql")
+        .execute(db)
+        .await?;
+
+    Ok(())
+}
+
+async fn create_indices(db: &Database) -> DatabaseResult<()> {
+    let _ = sqlx::query!("CREATE INDEX IF NOT EXISTS departure_date_index ON journey_list_view(departure_date)")
+        .execute(db)
+        .await?;
+
+    let _ = sqlx::query!("CREATE INDEX IF NOT EXISTS return_date_index ON journey_list_view(return_date)")
         .execute(db)
         .await?;
 

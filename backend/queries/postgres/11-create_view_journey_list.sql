@@ -1,4 +1,4 @@
-CREATE VIEW journey_list_view AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS journey_list_view AS
     SELECT
         journeys.id,
         journeys.departure_date,

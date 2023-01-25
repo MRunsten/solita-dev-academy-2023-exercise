@@ -1,1 +1,1 @@
-DROP VIEW IF EXISTS station_view;
+DROP MATERIALIZED VIEW IF EXISTS station_view;

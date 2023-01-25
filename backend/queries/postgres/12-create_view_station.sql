@@ -1,4 +1,4 @@
-CREATE VIEW station_view AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS station_view AS
     SELECT
         stations.station_id,
 
