@@ -38,7 +38,7 @@ pub struct CsvBicycleJourney {
     duration: Seconds,
 }
 
-pub async fn update<Source>(db: &Database, source: Source) -> DataSourceResult<()>
+pub async fn update<Source>(db: &Database, source: Source) -> DataSourceResult<u64>
 where
     Source: Read + Sync + Send,
 {
@@ -105,9 +105,7 @@ where
         }
     }
 
-    database::journey::add_multiple(&db, parsed_journeys).await?;
-
-    Ok(())
+    Ok(database::journey::add_multiple(&db, parsed_journeys).await?)
 }
 
 async fn get_valid_stations_ids(

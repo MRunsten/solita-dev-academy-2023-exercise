@@ -21,8 +21,8 @@ async fn main() -> Result<(), BoxedError> {
 
     let db = database::connect().await?;
 
-    let reinitialize_database = env::var("RELOAD_DATABASE")
-        .expect("Environment variable RELOAD_DATABASE was undefined");
+    let reinitialize_database =
+        env::var("RELOAD_DATABASE").expect("Environment variable RELOAD_DATABASE was undefined");
 
     match reinitialize_database.as_str() {
         "true" => empty_and_initialize_db(&db).await?,
@@ -52,7 +52,7 @@ async fn main() -> Result<(), BoxedError> {
 }
 
 async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
-    tracing::info!("Emptying and reinitializing database");
+    tracing::info!("Emptying and reloading database");
 
     let stations_url = env::var("LOAD_STATIONS_FROM")
         .expect("Environment variable LOAD_STATIONS_FROM was undefined");
@@ -67,22 +67,26 @@ async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
     let stations_csv = download_url(stations_url.as_str()).await?;
 
     tracing::info!("Updating stations database");
-    datasource::station::csv::update(&db, stations_csv.as_bytes()).await?;
+    let stations_added = datasource::station::csv::update(&db, stations_csv.as_bytes()).await?;
+    tracing::info!("Added {stations_added} stations to the database");
 
     tracing::info!("Updating journeys");
     for journey_url in journey_urls.split(",").collect::<Vec<&str>>().iter() {
         let journey_csv = download_url(journey_url).await?;
 
         tracing::info!("Updating journeys database");
-        datasource::journey::csv::update(&db, journey_csv.as_bytes()).await?;
+        let journeys_added = datasource::journey::csv::update(&db, journey_csv.as_bytes()).await?;
+        tracing::info!("Added {journeys_added} journeys to the database");
     }
 
-    tracing::info!("Database reinitialized");
+    tracing::info!("Database reloaded");
     Ok(())
 }
 
 async fn download_url(url: &str) -> Result<String, BoxedError> {
-    tracing::info!("Downloading {url} (May take a while depending on file size and internet speed).");
+    tracing::info!(
+        "Downloading {url} (May take a while depending on file size and internet speed)."
+    );
 
     let body = reqwest::get(url).await?.text().await?;
     tracing::info!("Downloading completed.");

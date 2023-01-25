@@ -35,7 +35,7 @@ pub struct CsvBicycleStation {
     y: f64,
 }
 
-pub async fn update<Source>(db: &Database, source: Source) -> DataSourceResult<()>
+pub async fn update<Source>(db: &Database, source: Source) -> DataSourceResult<u64>
 where
     Source: Read + Sync + Send,
 {
@@ -86,9 +86,7 @@ where
         parsed_stations.push(station);
     }
 
-    database::station::add_multiple(&db, parsed_stations).await?;
-
-    Ok(())
+    Ok(database::station::add_multiple(&db, parsed_stations).await?)
 }
 
 async fn get_city_name_to_id_cache(
