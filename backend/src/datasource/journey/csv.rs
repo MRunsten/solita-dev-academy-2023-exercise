@@ -35,16 +35,11 @@ pub async fn update<Source>(db: &Database, source: Source) -> DataSourceResult<(
 where
     Source: Read + Sync + Send,
 {
-    use std::time::Instant;
-    let now = Instant::now();
-
     let csv_journeys = csv::Reader::from_reader(source)
         .deserialize()
         .collect::<Result<Vec<CsvBicycleJourney>, csv::Error>>()?;
 
-    let mut valid_stations = get_valid_stations_ids(&db, &csv_journeys).await?;
-
-    dbg!(valid_stations.len());
+    let mut valid_stations = get_valid_stations_ids(&db).await?;
 
     let mut parsed_journeys = Vec::new();
 
@@ -59,7 +54,6 @@ where
         if !&valid_stations.contains(&return_station_id) {
             continue;
         }
-
 
         let journey_insert = JourneyInsert {
             departure_date: csv_journey.departure_date,
@@ -77,36 +71,16 @@ where
         }
     }
 
-    dbg!(parsed_journeys.len());
-
     database::journey::add_multiple(&db, parsed_journeys).await?;
-
-    let elapsed = now.elapsed();
-    println!("Elapsed: {:.2?}", elapsed);
 
     Ok(())
 }
 
 async fn get_valid_stations_ids(
     db: &Database,
-    csv_journeys: &Vec<CsvBicycleJourney>,
 ) -> DatabaseResult<HashSet<station::Id>> {
-    // let valid_stations = HashSet::new();
-
-    // let mut unique_stations =
-    //     csv_journeys
-    //         .iter()
-    //         .fold(HashSet::<station::Id>::new(), |mut acc, journey| {
-    //             acc.insert(station::Id(journey.departure_station_id));
-    //             acc.insert(station::Id(journey.return_station_id));
-    //             acc
-    //         });
-    //
-    // dbg!(unique_stations);
 
     let valid_stations = database::station::get_all(&db).await?.into_iter().map(|station| station.id);
-
-    // dbg!(stations.len());
 
     Ok(HashSet::from_iter(valid_stations))
 }
