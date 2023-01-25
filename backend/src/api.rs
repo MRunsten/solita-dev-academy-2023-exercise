@@ -10,7 +10,6 @@ pub mod station;
 pub mod journey;
 
 pub async fn run(db: Database) -> Result<(), BoxedError> {
-    tracing_subscriber::fmt::init();
 
     let app = define_routes(db);
 
