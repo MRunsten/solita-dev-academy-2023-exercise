@@ -2,11 +2,12 @@ mod station;
 mod station_list;
 mod journey_list;
 
+use serde::Deserialize;
 pub use station::*;
 pub use station_list::*;
 pub use journey_list::*;
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub enum OrderDirection {
     Ascending,
     Descending,
@@ -23,7 +24,7 @@ impl ToString for OrderDirection {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub enum StationListOrder {
     Id,
 }
@@ -38,7 +39,7 @@ impl ToString for StationListOrder {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub enum JourneyListOrder {
     DepartureDate,
 }

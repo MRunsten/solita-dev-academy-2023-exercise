@@ -1,10 +1,11 @@
+use serde::{Deserialize, Serialize};
 use crate::model::{city, station, station_operator};
 use crate::unit::{Kilometers, Minutes};
 
 #[cfg(feature = "postgres")]
 pub use crate::database::postgres_view::*;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct JourneyListItem {
     pub departure_date: chrono::NaiveDateTime,
     pub return_date: chrono::NaiveDateTime,
@@ -16,13 +17,13 @@ pub struct JourneyListItem {
     pub duration_minutes: Minutes,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct JourneyListItemStation {
     pub station_id: station::Id,
     pub name: station::Name,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct StationListItem {
     pub station_id: station::Id,
 
@@ -33,7 +34,7 @@ pub struct StationListItem {
     pub capacity: station::Capacity,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Station {
     pub station_id: station::Id,
 
@@ -46,7 +47,7 @@ pub struct Station {
     pub total_ending_journeys: u64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct StationListParams {
 
     // Note: Depending on how much dynamicity is required the
@@ -57,7 +58,7 @@ pub struct StationListParams {
     pub order_direction: OrderDirection,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct JourneyListParams {
 
     // Note: Depending on how much dynamicity is required the

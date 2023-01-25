@@ -19,20 +19,20 @@ impl From<&Id> for i32 {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Name {
     pub finnish: String,
     pub swedish: String,
     pub english: String,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Address {
     pub finnish: String,
     pub swedish: String,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Station {
     pub id: Id,
 

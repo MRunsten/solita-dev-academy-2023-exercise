@@ -1,10 +1,12 @@
+use serde::Serialize;
+
 pub type Meters = f64;
 pub type Kilometers = f64;
 
 pub type Seconds = f64;
 pub type Minutes = f64;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum Latitude {
     North(f64),
     South(f64),
@@ -19,7 +21,7 @@ impl From<&Latitude> for f64 {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum Longitude {
     East(f64),
     West(f64),
@@ -34,7 +36,7 @@ impl From<&Longitude> for f64 {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Coordinate {
     pub latitude: Latitude,
     pub longitude: Longitude,
