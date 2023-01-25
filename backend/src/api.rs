@@ -29,6 +29,7 @@ pub async fn run(db: Database) -> Result<(), BoxedError> {
 
 fn define_routes(db: Database) -> Router {
     let station_api = Router::new()
+        .route("/:id", get(station::single))
         .route("/list", get(station::list));
 
     let api = Router::new()
