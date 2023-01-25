@@ -3,9 +3,10 @@ pub mod journey;
 pub mod station;
 pub mod station_operator;
 
-use sqlx::PgPool;
-use sqlx::postgres::PgPoolOptions;
+use sqlx::{Connection, ConnectOptions, PgPool};
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 use std::env;
+use tracing::log::LevelFilter;
 
 use crate::database::DatabaseResult;
 
@@ -16,16 +17,18 @@ pub async fn connect() -> DatabaseResult<Database> {
     let postgres_address =
         env::var("DATABASE_URL").expect("Environment variable DATABASE_URL was undefined");
 
-    let pool = PgPoolOptions::new()
+    let mut connect_options = postgres_address.parse::<PgConnectOptions>()?;
+
+    connect_options.log_statements(LevelFilter::Debug);
+
+    let pool = sqlx::pool::PoolOptions::new()
         .max_connections(5)
-        .connect(&*postgres_address)
-        .await?;
+        .connect_with(connect_options).await?;
 
     initialize(&pool).await?;
 
     Ok(pool)
 }
-
 pub async fn initialize(db: &Database) -> DatabaseResult<()> {
 
     // Unfortunately at least Postgres doesn't support conditional
