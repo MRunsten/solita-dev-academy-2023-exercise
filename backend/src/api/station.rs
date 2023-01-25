@@ -26,7 +26,7 @@ pub async fn single(
             if let DatabaseError::RowNotFound = err {
                 return (
                     StatusCode::NOT_FOUND,
-                    Json(format!("station {station_id} was not found the database"))
+                    Json(format!("Station {station_id} was not found from the database"))
                 ).into_response()
             }
         }
