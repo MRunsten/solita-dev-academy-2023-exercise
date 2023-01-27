@@ -1,0 +1,12 @@
+FROM node:16 AS build
+
+ENV PUBLIC_API_ADDRESS=$PUBLIC_API_ADDRESS
+
+ARG PUBLIC_API_ADDRESS
+WORKDIR /app
+COPY frontend/ .
+
+RUN npm i
+RUN npx vite build
+
+ENTRYPOINT ["node", "build/index.js"]
