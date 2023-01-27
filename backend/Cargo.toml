@@ -13,7 +13,7 @@ csv = "1.1.6"
 dotenv = "0.15.0"
 reqwest = "0.11.14"
 serde = { version = "1.0.152", features = ["derive"] }
-sqlx = { version = "0.6.2", features = ["postgres", "runtime-tokio-rustls", "chrono"] }
+sqlx = { version = "0.6.2", features = ["postgres", "runtime-tokio-rustls", "chrono", "offline"] }
 thiserror = "=1.0.34" # There seems to be some toolchain issues when using a newer version.
 tokio = { version = "1.24.2", features = ["full"] }
 tower = "0.4.13"
