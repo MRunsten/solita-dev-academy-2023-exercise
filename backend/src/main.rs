@@ -84,6 +84,9 @@ async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
         tracing::info!("Parsed {parsed_rows} rows, but added {unique_new_rows} new unique journeys to the database (skipped {skipped_rows} rows).");
     }
 
+    tracing::info!("Refreshing materialized views");
+    database::refresh_views(&db).await?;
+
     tracing::info!("Database reloaded");
     Ok(())
 }
