@@ -42,6 +42,7 @@ services:
         # from the frontend container to HTTP clients, which use
         # this address to connect to the backend api.
         - PUBLIC_API_ADDRESS=$PUBLIC_API_ADDRESS
+        - PRIVATE_API_ADDRESS=http://backend-service:3000/api
     depends_on:
       - backend-service
     ports:
