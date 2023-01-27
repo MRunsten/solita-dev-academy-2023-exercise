@@ -3,11 +3,9 @@
 
 	import type { PageData } from './$types';
 	export let data: PageData;
-
-    let content_top: HTMLElement;
 </script>
 
-<div id="content" bind:this={content_top}>
+<div id="content">
     <div class="large-display">
         <Pagination
             sub_url="journeys"
