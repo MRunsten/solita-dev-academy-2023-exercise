@@ -27,7 +27,7 @@
 		<tbody>
 			<tr>
 				<td><i class="emoji-on-left">🇫🇮</i>{data.address.finnish}</td>
-				{#if data.city.finnish != ' '}
+				{#if data.city.finnish !== ' '}
 					<td>{data.city.finnish}</td>
 				{:else}
 					<td>No Finnish city name available.</td>
@@ -35,7 +35,7 @@
 			</tr>
 			<tr>
 				<td><i class="emoji-on-left">🇸🇪</i>{data.address.swedish}</td>
-				{#if data.city.swedish != ' '}
+				{#if data.city.swedish !== ' '}
 					<td>{data.city.swedish}</td>
 				{:else}
 					<td>No Swedish city name available.</td>
@@ -51,7 +51,7 @@
 
 		<tbody>
 			<tr>
-				{#if data.operator_name != ' '}
+				{#if data.operator_name !== ' '}
 					<td>{data.operator_name}</td>
 				{:else}
 					<td>No operator information available.</td>
