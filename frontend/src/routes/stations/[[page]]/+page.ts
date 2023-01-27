@@ -1,9 +1,10 @@
 import { z } from "zod";
-
 import { error } from '@sveltejs/kit';
+import { PUBLIC_API_ADDRESS } from '$env/static/public'
+
 import type { PageLoad } from './$types';
 
-import { PUBLIC_API_ADDRESS } from '$env/static/public'
+const MAX_STATIONS_PER_PAGE = 50;
 
 const StationListView = z.array(z.object({
     station_id: z.number().transform(v => v.toString().padStart(3, '0')),
@@ -24,9 +25,16 @@ const StationListView = z.array(z.object({
     capacity: z.number(),
 }));
 
-export const load = (async ({ fetch }) => {
-    
-    const res = await fetch(`${PUBLIC_API_ADDRESS}/station/list`);
+export const load = (async ({ fetch, params }) => {
+
+    let page = 0;
+
+    if (params.page) {
+        let page_parse_result = z.coerce.number().safeParse(params.page);
+        page = (page_parse_result.success) ? page_parse_result.data : 0;
+    }
+
+    const res = await fetch(`${PUBLIC_API_ADDRESS}/station/list?page=${page}`);
     const station_json = await res.json();
 
     if(!res.ok) {
@@ -43,5 +51,10 @@ export const load = (async ({ fetch }) => {
         });
     }
 
-    return {stations: parsed_station_list_view.data};
+    return {
+        page: page, 
+        max_per_page: MAX_STATIONS_PER_PAGE, 
+        stations: parsed_station_list_view.data
+    };
+
 }) satisfies PageLoad;
