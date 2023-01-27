@@ -1,12 +1,13 @@
 import { z } from "zod";
-
 import { error } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
 
 import { PUBLIC_API_ADDRESS } from '$env/static/public'
 
-const MAX_JOURNEYS_PER_PAGE = 100;
+import type { PageLoad } from './$types';
 
+const MAX_JOURNEYS_PER_PAGE = 50;
+
+type JourneyListViewStation = z.infer<typeof JourneyListViewStation>
 const JourneyListViewStation = z.object({
     station_id: z.number().transform(v => v.toString().padStart(3, '0')),
     name: z.object({
@@ -24,6 +25,7 @@ const JourneyListDate = z.string().datetime().transform(v => {
     return date.toLocaleString(undefined, { timeZone: 'UTC'});    
 })
 
+type JourneyListView = z.infer<typeof JourneyListView>;
 const JourneyListView = z.array(z.object({
     departure_date: JourneyListDate,
     return_date: JourneyListDate,
@@ -36,13 +38,14 @@ const JourneyListView = z.array(z.object({
 }));
 
 export const load = (async ({ fetch, params }) => {
-    const page_parse_result = z.coerce.number().safeParse(params.page);
+    let page = 0;
 
-    console.log(page_parse_result);
-
-    const page = (page_parse_result.success) ? page_parse_result.data : 0;
+    if (params.page) {
+        let page_parse_result = z.coerce.number().safeParse(params.page);
+        page = (page_parse_result.success) ? page_parse_result.data : 0;
+    }
     
-    const res = await fetch(`${PUBLIC_API_ADDRESS}/journey/list?page=${page}`);
+    const res = await fetch(`${PUBLIC_API_ADDRESS}/journey/list?page=${page}&limit=${MAX_JOURNEYS_PER_PAGE}`);
     const journey_json = await res.json();
 
     if(!res.ok) {
@@ -65,10 +68,21 @@ export const load = (async ({ fetch, params }) => {
         });
     }
 
+    let journeys_display = parsed_journey_list_view.data.map((journey) => ({
+        departure_date: journey.departure_date,
+        return_date: journey.return_date,
+
+        departure_station_name: journey.departure_station.name.english,
+        return_station_name: journey.return_station.name.english,
+
+        distance_kilometers: journey.distance_kilometers,
+        duration_minutes: journey.duration_minutes,
+    }));
+
     return {
         page: page, 
         max_per_page: MAX_JOURNEYS_PER_PAGE, 
-        journeys: parsed_journey_list_view.data
+        journeys: journeys_display,
     };
 
 }) satisfies PageLoad;

@@ -1,47 +1,77 @@
 <script lang="ts">
-    import type { PageData } from './$types';
+    import Pagination from '../../../lib/pagination.svelte';
 
-    export let data: PageData;
+	import type { PageData } from './$types';
+	export let data: PageData;
+
+    let content_top: HTMLElement;
 </script>
 
-<h1>Bicycle journeys: page {data.page} </h1>
+<div id="content" bind:this={content_top}>
+    <div class="large-display">
+        <Pagination
+            sub_url="journeys"
+            current_page={data.page}
+            data_amount={data.journeys.length}
+            data_max_per_page={data.max_per_page}
+        />
+    </div>
 
-{#if data.page > 0}
-    <a href="/journeys/{data.page - 1}">Previous page</a>
-{/if}
+	<table class="data-list">
+		<thead>
+			<tr>
+				<td>Departure</td>
+				<td />
+				<td>Return</td>
+				<td>Info</td>
+			</tr>
+		</thead>
+		<tbody>
+			{#each data.journeys as journey}
+				<tr>
+					<td width="40%">{journey.departure_station_name}</td>
+					<td width="2%"><i class="emoji-on-left">➡️</i></td>
+					<td width="40%">{journey.return_station_name}</td>
+					<td width="18%">{journey.distance_kilometers} km</td>
+				</tr>
 
-{#if (data.journeys.length === data.max_per_page)}
-    <a href="/journeys/{data.page + 1}">Next page</a>
-{/if}
+				<tr>
+					<td>{journey.departure_date}</td>
+					<td />
+					<td>{journey.return_date}</td>
+					<td>{journey.duration_minutes} min</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
 
-<table>
-    <thead>
-        <tr>
-            <td>Departure date</td>
-            <td>Return date</td>
-            <td>Departure station</td>
-            <td>Return station</td>
-            <td>Distance</td>
-            <td>Duration</td>
-        </tr>
-    </thead>
+    <Pagination
+    sub_url="journeys"
+    current_page={data.page}
+    data_amount={data.journeys.length}
+    data_max_per_page={data.max_per_page}
+    />
+</div>
 
-    {#each data.journeys as journey}
-    <tr>
-        <td>{journey.departure_date}</td>
-        <td>{journey.return_date.toLocaleString()}</td>
-        <td>{journey.departure_station.station_id} | {journey.departure_station.name.finnish} | {journey.departure_station.name.swedish} | {journey.departure_station.name.english}</td>
-        <td>{journey.return_station.station_id} | {journey.return_station.name.finnish} | {journey.return_station.name.swedish} | {journey.return_station.name.english}</td>
-        <td>{journey.distance_kilometers} km</td>
-        <td>{journey.duration_minutes} minutes</td>
-    </tr>
-    {/each}
-</table>
+<style lang="scss">
+	@import '../../../styles/table.scss';
+	@import '../../../styles/emoji.scss';
 
-{#if data.page > 0}
-    <a href="/journeys/{data.page - 1}">Previous page</a>
-{/if}
+	#content {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		padding: 0 16px;
+	}
 
-{#if (data.journeys.length === data.max_per_page)}
-    <a href="/journeys/{data.page + 1}">Next page</a>
-{/if}
+	table.data-list > tbody > tr:nth-child(4n-1),
+	table.data-list > tbody > tr:nth-child(4n) {
+		background: $content-background-alt;
+	}
+
+	@media only screen and (max-width: 880px) {
+		#content {
+			padding: 0;
+		}
+	}
+</style>
