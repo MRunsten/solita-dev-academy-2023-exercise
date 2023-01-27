@@ -49,3 +49,9 @@ fn define_routes(db: Database) -> Router {
 
     app
 }
+
+#[derive(Deserialize)]
+pub struct Pagination {
+    page: Option<u32>,
+    limit: Option<u32>,
+}

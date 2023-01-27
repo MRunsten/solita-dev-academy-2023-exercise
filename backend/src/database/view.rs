@@ -57,6 +57,9 @@ pub struct StationListParams {
     // directionality.
     pub order_by: StationListOrder,
     pub order_direction: OrderDirection,
+
+    pub page: u32,
+    pub limit: u32,
 }
 
 #[derive(Debug, Deserialize)]

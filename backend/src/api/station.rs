@@ -1,10 +1,15 @@
-use axum::extract::{Path, State};
+use std::cmp;
+use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
 use crate::{database, model};
+use crate::api::Pagination;
 use crate::database::{Database, DatabaseError};
 use crate::database::view::{OrderDirection, StationListOrder, StationListParams};
+
+const STATIONS_MAX_PER_PAGE: u32 = 500;
+const DEFAULT_STATIONS_PER_PAGE: u32 = 50;
 
 pub async fn single(
     Path(station_id): Path<i32>,
@@ -40,12 +45,19 @@ pub async fn single(
 
 
 pub async fn list(
-    State(db): State<Database>
+    pagination: Query<Pagination>,
+    State(db): State<Database>,
 ) -> Response {
+    let pagination: Pagination = pagination.0;
 
     let params = StationListParams {
         order_by: StationListOrder::Id,
-        order_direction: OrderDirection::Ascending
+        order_direction: OrderDirection::Ascending,
+        page: pagination.page.unwrap_or_default(), // Default for u32 is 0.
+        limit: cmp::min(
+            STATIONS_MAX_PER_PAGE,
+            pagination.limit.unwrap_or(DEFAULT_STATIONS_PER_PAGE)
+        ),
     };
 
     match database::view::station_list(&db, &params).await {

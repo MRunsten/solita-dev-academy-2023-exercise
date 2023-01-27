@@ -5,6 +5,7 @@ use axum::response::Response;
 use axum::Json;
 use serde::Deserialize;
 use std::cmp;
+use crate::api::Pagination;
 
 use crate::database;
 use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
@@ -12,12 +13,6 @@ use crate::database::Database;
 
 const LIST_MAX_PER_PAGE: u32 = 100;
 const DEFAULT_LIST_PER_PAGE: u32 = 100;
-
-#[derive(Deserialize)]
-pub struct Pagination {
-    page: Option<u32>,
-    limit: Option<u32>,
-}
 
 pub async fn list(pagination: Query<Pagination>, State(db): State<Database>) -> Response {
     let pagination: Pagination = pagination.0;

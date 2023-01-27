@@ -22,6 +22,12 @@ pub async fn station_list(
     query_str_tmp.push(params.order_by.to_string());
     query_str_tmp.push(params.order_direction.to_string());
 
+    query_str_tmp.push("LIMIT");
+    query_str_tmp.push(params.limit.to_string());
+
+    query_str_tmp.push("OFFSET");
+    query_str_tmp.push((params.page * params.limit).to_string());
+
     let query_str = query_builder.build().sql();
 
     let mut rows = sqlx::query(query_str)
