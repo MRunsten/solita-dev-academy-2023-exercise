@@ -24,6 +24,8 @@ const StationView = z.object({
         swedish: z.string(),
     }),
 
+    operator_name: z.string(),
+
     total_ending_journeys: z.number(),
     total_starting_journeys: z.number(),
 })
