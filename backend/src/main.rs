@@ -17,7 +17,15 @@ pub type BoxedError = Box<dyn Error>;
 async fn main() -> Result<(), BoxedError> {
     tracing_subscriber::fmt::init();
 
-    dotenv().expect("fatal error: .env file not found from the current or parent directory");
+    match env::var("CITY_BICYCLES_IN_PRODUCTION").is_ok() {
+        true => {
+            tracing::info!("Running in PRODUCTION mode")
+        },
+        false => {
+            tracing::info!("Running in DEVELOPMENT mode");
+            dotenv().expect("fatal error: .env file not found from the current or parent directory");
+        },
+    };
 
     let db = database::connect().await?;
 
