@@ -43,6 +43,7 @@ pub struct Station {
     pub address: station::Address,
 
     pub city: city::Name,
+    pub operator_name: station_operator::Name,
 
     pub total_starting_journeys: u64,
     pub total_ending_journeys: u64,

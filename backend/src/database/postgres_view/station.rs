@@ -1,5 +1,5 @@
 use crate::database::{view, Database, DatabaseResult};
-use crate::model::{city, station};
+use crate::model::{city, station, station_operator};
 
 pub async fn station(db: &Database, station_id: station::Id) -> DatabaseResult<view::Station> {
     let record = sqlx::query!(
@@ -30,10 +30,13 @@ pub async fn station(db: &Database, station_id: station::Id) -> DatabaseResult<v
 
         city: city::Name {
             finnish: record.city_name_finnish.unwrap_or("error".to_string()),
-            swedish: record.city_name_swedish.unwrap_or("error".to_string())
+            swedish: record.city_name_swedish.unwrap_or("error".to_string()),
         },
+
+        operator_name: record.operator_name.unwrap_or("error".to_string()),
+
         total_starting_journeys: record.journeys_departing_amount.unwrap_or(0) as u64,
-        total_ending_journeys: record.journeys_returning_amount.unwrap_or(0) as u64
+        total_ending_journeys: record.journeys_returning_amount.unwrap_or(0) as u64,
     };
 
     Ok(station_view)

@@ -12,6 +12,8 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS station_view AS
         cities.name_finnish as city_name_finnish,
         cities.name_swedish as city_name_swedish,
 
+        station_operators.operator_name as operator_name,
+
         stations.capacity,
 
         departing_journeys.amount as journeys_departing_amount,
@@ -19,6 +21,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS station_view AS
     FROM
         stations,
         cities,
+        station_operators,
         (SELECT departure_station_id, COUNT(*) as amount FROM journeys GROUP BY departure_station_id) as departing_journeys,
         (SELECT return_station_id, COUNT(*) as amount FROM journeys GROUP BY return_station_id) as returning_journeys
     WHERE
@@ -27,3 +30,5 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS station_view AS
         stations.station_id = returning_journeys.return_station_id
     AND
         stations.city_id = cities.city_id
+    AND
+        stations.operator_id = station_operators.operator_id
