@@ -27,9 +27,13 @@
 		<tbody>
 			{#each data.journeys as journey}
 				<tr>
-					<td width="40%">{journey.departure_station_name}</td>
+					<td width="40%">
+                        <a href='/station/{journey.departure_station_id}'>{journey.departure_station_name}</a>
+                    </td>
 					<td width="2%"><i class="emoji-on-left">➡️</i></td>
-					<td width="40%">{journey.return_station_name}</td>
+					<td width="40%">
+                        <a  href='/station/{journey.return_station_id}'>{journey.return_station_name}</a>
+                    </td>
 					<td width="18%">{journey.distance_kilometers} km</td>
 				</tr>
 
@@ -61,6 +65,15 @@
 		flex-direction: column;
 		padding: 0 16px;
 	}
+
+    table.data-list a {
+        color:$accent;
+        text-decoration: none;
+    }
+
+    table.data-list a:hover {
+        text-decoration: underline;
+    }
 
 	table.data-list > tbody > tr:nth-child(4n-1),
 	table.data-list > tbody > tr:nth-child(4n) {

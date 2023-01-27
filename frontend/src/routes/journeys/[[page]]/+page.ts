@@ -72,6 +72,9 @@ export const load = (async ({ fetch, params }) => {
         departure_date: journey.departure_date,
         return_date: journey.return_date,
 
+        departure_station_id: journey.departure_station.station_id,
+        return_station_id: journey.return_station.station_id,
+
         departure_station_name: journey.departure_station.name.english,
         return_station_name: journey.return_station.name.english,
 
