@@ -1,0 +1,41 @@
+$content-background: #fff;
+$content-background-alt: #f1f5f8;
+
+$color1: #27282a;
+$color1-text: #fff;
+
+$color2: #3e454c;
+$color2-text: #eee;
+$color3:#363b3f;
+$color3-text:#bbb;
+
+$accent: #1784c7;
+
+$border-radius: 8px;
+
+div.large-display {
+    display:flex;
+}
+
+table.large-display {
+    display: table;
+}
+
+table.mobile {
+    display:none;
+}
+
+@media only screen and (max-width: 880px) {
+
+    div.large-display {
+        display:none;
+    }
+
+    table.large-display {
+        display: none;
+    }
+
+    table.mobile {
+        display: table;
+    }
+}
