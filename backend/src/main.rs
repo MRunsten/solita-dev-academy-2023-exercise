@@ -75,8 +75,13 @@ async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
         let journey_csv = download_url(journey_url).await?;
 
         tracing::info!("Updating journeys database");
-        let journeys_added = datasource::journey::csv::update(&db, journey_csv.as_bytes()).await?;
-        tracing::info!("Added {journeys_added} journeys to the database");
+
+        let insert_result = datasource::journey::csv::update(&db, journey_csv.as_bytes()).await?;
+        let parsed_rows = insert_result.rows_had;
+        let unique_new_rows = insert_result.new_rows_inserted;
+        let skipped_rows = parsed_rows - unique_new_rows;
+
+        tracing::info!("Parsed {parsed_rows} rows, but added {unique_new_rows} new unique journeys to the database (skipped {skipped_rows} rows).");
     }
 
     tracing::info!("Database reloaded");

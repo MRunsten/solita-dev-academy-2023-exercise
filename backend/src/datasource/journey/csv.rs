@@ -1,11 +1,11 @@
 use crate::database;
-use crate::database::{Database, DatabaseResult};
+use crate::database::{Database, DatabaseResult, JourneyInsertResult};
 use crate::datasource::DataSourceResult;
-use crate::model::journey::{Journey, JourneyInsert};
 use chrono::{NaiveDate, NaiveDateTime};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::io::Read;
+use crate::model::journey::JourneyInsert;
 use crate::model::station;
 
 use crate::unit::{Meters, Seconds};
@@ -38,7 +38,7 @@ pub struct CsvBicycleJourney {
     duration: Seconds,
 }
 
-pub async fn update<Source>(db: &Database, source: Source) -> DataSourceResult<u64>
+pub async fn update<Source>(db: &Database, source: Source) -> DataSourceResult<JourneyInsertResult>
 where
     Source: Read + Sync + Send,
 {

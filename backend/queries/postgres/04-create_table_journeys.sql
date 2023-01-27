@@ -11,5 +11,6 @@ CREATE TABLE IF NOT EXISTS journeys (
     duration_seconds DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT fk_departure_station_id FOREIGN KEY(departure_station_id) REFERENCES stations(station_id),
-    CONSTRAINT fk_return_station_id FOREIGN KEY(return_station_id) REFERENCES stations(station_id)
+    CONSTRAINT fk_return_station_id FOREIGN KEY(return_station_id) REFERENCES stations(station_id),
+    CONSTRAINT unique_journey UNIQUE (departure_date, departure_station_id, return_date, return_station_id, distance_meters, duration_seconds)
 );
