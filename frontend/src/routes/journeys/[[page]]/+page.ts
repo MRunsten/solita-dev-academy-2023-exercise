@@ -45,7 +45,7 @@ export const load = (async ({ fetch, params }) => {
         page = (page_parse_result.success) ? page_parse_result.data : 0;
     }
     
-    const res = await fetch(`${PUBLIC_API_ADDRESS}/journey/list?page=${page}&limit=${MAX_JOURNEYS_PER_PAGE}`);
+    const res = await fetch(`${PUBLIC_API_ADDRESS}/journeys/?page=${page}&limit=${MAX_JOURNEYS_PER_PAGE}`);
     const journey_json = await res.json();
 
     if(!res.ok) {

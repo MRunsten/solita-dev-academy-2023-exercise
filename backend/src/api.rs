@@ -35,14 +35,17 @@ fn define_routes(db: Database) -> Router {
         .allow_origin(Any);
 
     let station_api = Router::new()
-        .route("/:id", get(station::single))
-        .route("/list", get(station::list));
+        .route("/:id", get(station::single));
 
-    let journey_api = Router::new().route("/list", get(journey::list));
+    let stations_api = Router::new()
+        .route("/", get(station::list));
+
+    let journeys_api = Router::new().route("/", get(journey::list));
 
     let api = Router::new()
-        .nest("/journey", journey_api)
+        .nest("/journeys", journeys_api)
         .nest("/station", station_api)
+        .nest("/stations", stations_api)
         .layer(ServiceBuilder::new().layer(cors));
 
     let app = Router::new().nest("/api", api).with_state(db);

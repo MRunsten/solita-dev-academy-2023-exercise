@@ -34,7 +34,7 @@ export const load = (async ({ fetch, params }) => {
         page = (page_parse_result.success) ? page_parse_result.data : 0;
     }
 
-    const res = await fetch(`${PUBLIC_API_ADDRESS}/station/list?page=${page}`);
+    const res = await fetch(`${PUBLIC_API_ADDRESS}/stations?page=${page}`);
     const station_json = await res.json();
 
     if(!res.ok) {
