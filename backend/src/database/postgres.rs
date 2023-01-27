@@ -4,9 +4,8 @@ pub mod station;
 pub mod station_operator;
 
 use sqlx::{Connection, ConnectOptions, PgPool};
-use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
+use sqlx::postgres::PgConnectOptions;
 use std::env;
-use tracing::log::LevelFilter;
 
 use crate::database::DatabaseResult;
 
@@ -18,8 +17,7 @@ pub async fn connect() -> DatabaseResult<Database> {
         env::var("DATABASE_URL").expect("Environment variable DATABASE_URL was undefined");
 
     let mut connect_options = postgres_address.parse::<PgConnectOptions>()?;
-
-    connect_options.log_statements(LevelFilter::Debug);
+    connect_options.disable_statement_logging();
 
     let pool = sqlx::pool::PoolOptions::new()
         .max_connections(5)
