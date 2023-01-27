@@ -32,6 +32,8 @@ pub async fn initialize(db: &Database) -> DatabaseResult<()> {
     create_views(db).await?;
     create_indices(db).await?;
 
+    refresh_views(db).await?;
+
     Ok(())
 }
 
@@ -110,6 +112,14 @@ async fn drop_views(db: &Database) -> DatabaseResult<()> {
     let _ = sqlx::query_file!("queries/postgres/drop_view_journey_list.sql")
         .execute(db)
         .await?;
+
+    Ok(())
+}
+
+pub async fn refresh_views(db: &Database) -> DatabaseResult<()> {
+    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW journey_list_view").execute(db).await?;
+    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_list_view").execute(db).await?;
+    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_view").execute(db).await?;
 
     Ok(())
 }
