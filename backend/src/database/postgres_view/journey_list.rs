@@ -49,9 +49,9 @@ pub async fn journey_list(
             return_station: JourneyListItemStation {
                 station_id:station::Id(row.try_get("return_station_id")?),
                 name: station::Name {
-                    finnish: row.try_get("departure_station_name_finnish")?,
-                    swedish: row.try_get("departure_station_name_swedish")?,
-                    english: row.try_get("departure_station_name_english")?,
+                    finnish: row.try_get("return_station_name_finnish")?,
+                    swedish: row.try_get("return_station_name_swedish")?,
+                    english: row.try_get("return_station_name_english")?,
                 },
             },
             distance_kilometers: row.try_get("distance_kilometers")?,
