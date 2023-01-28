@@ -117,9 +117,9 @@ async fn drop_views(db: &Database) -> DatabaseResult<()> {
 }
 
 pub async fn refresh_views(db: &Database) -> DatabaseResult<()> {
-    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW journey_list_view").execute(db).await?;
-    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_list_view").execute(db).await?;
-    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_view").execute(db).await?;
+    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW journey_list_view WITH DATA").execute(db).await?;
+    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_list_view WITH DATA").execute(db).await?;
+    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_view WITH DATA").execute(db).await?;
 
     Ok(())
 }
