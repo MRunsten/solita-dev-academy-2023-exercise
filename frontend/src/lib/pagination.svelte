@@ -22,6 +22,11 @@ export let data_max_per_page: number;
 </div>
 
 <style lang="scss">
+    @import '../app.scss';
+
+    $button-text-color: $content-background;
+    $button-border-radius:8px;
+
     .page-links {
         width:100%;
         display:flex;
@@ -31,12 +36,26 @@ export let data_max_per_page: number;
 
     .page-links a {
         display: block;
-        padding:16px;
+        padding:12px 16px;
+        margin:16px 0;
+        background: $color2;
+        border-radius: $button-border-radius;
+        color: $button-text-color;
+        text-decoration: none;
+        box-shadow: none;
+    }
+
+    .page-links a:hover {
+        background: $accent;
     }
 
     @media only screen and (max-width: 880px) {
         .page-links {
             font-size:0.6rem;
+        }
+
+        .page-links a {
+            margin: 16px;
         }
     }
 </style>
