@@ -141,3 +141,66 @@ async fn get_operator_name_to_id_cache(
 
     Ok(operator_name_to_id)
 }
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+    use sqlx::PgPool;
+    use tokio::time;
+    use crate::BoxedError;
+
+    #[sqlx::test]
+    async fn data_pipeline(db: PgPool) -> Result<(), BoxedError> {
+        use std::fs::File;
+
+        use crate::model;
+        use crate::database;
+        use crate::datasource;
+
+        database::initialize(&db).await?;
+
+        let test_data = File::open("./tests/pipeline_test_data/station_pipeline.csv")?;
+
+        let amount_added = datasource::station::csv::update(&db, test_data).await?;
+        assert_eq!(amount_added, 2);
+
+        database::refresh_views(&db).await?;
+
+        let station42 = database::view::station(&db, model::station::Id(42)).await?;
+        let station123 = database::view::station(&db, model::station::Id(123)).await?;
+
+        assert_eq!(station42.station_id, model::station::Id(42));
+
+        assert_eq!(station42.name.finnish, "station1 name fin");
+        assert_eq!(station42.name.swedish, "station1 name swe");
+        assert_eq!(station42.name.english, "station1 name eng");
+
+        assert_eq!(station42.address.finnish, "station1 address fin");
+        assert_eq!(station42.address.swedish, "station1 address swe");
+
+        assert_eq!(station42.city.finnish, "station1 city fin");
+        assert_eq!(station42.city.swedish, "station1 city swe");
+
+        assert_eq!(station123.station_id, model::station::Id(123));
+
+        assert_eq!(station123.name.finnish, "station2 name fin");
+        assert_eq!(station123.name.swedish, "station2 name swe");
+        assert_eq!(station123.name.english, "station2 name eng");
+
+        assert_eq!(station123.address.finnish, "station2 address fin");
+        assert_eq!(station123.address.swedish, "station2 address swe");
+
+        assert_eq!(station123.city.finnish, "station2 city fin");
+        assert_eq!(station123.city.swedish, "station2 city swe");
+
+        // TODO: Should probably add test case for the following.
+        assert_eq!(station42.total_starting_journeys, 0);
+        assert_eq!(station42.total_ending_journeys, 0);
+
+        assert_eq!(station123.total_starting_journeys, 0);
+        assert_eq!(station123.total_ending_journeys, 0);
+
+        // TODO: Location coordinates are not being tested as they are not exported in the view for now.
+        Ok(())
+    }
+}
