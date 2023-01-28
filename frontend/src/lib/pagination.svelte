@@ -43,6 +43,8 @@ export let data_max_per_page: number;
         color: $button-text-color;
         text-decoration: none;
         box-shadow: none;
+        
+		transition:all 0.1s;
     }
 
     .page-links a:hover {
