@@ -1,10 +1,8 @@
-use sqlx::postgres::PgRow;
-use sqlx::{PgPool, Row};
+use sqlx::PgPool;
 
 use crate::database::DatabaseResult;
-use crate::model::city::Id;
 use crate::model::station::Station;
-use crate::model::{city, station, station_operator};
+use crate::model::{station};
 use crate::unit::{Coordinate, Latitude, Longitude};
 
 pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult<u64> {
@@ -133,8 +131,17 @@ pub async fn get_all(db: &PgPool) -> DatabaseResult<Vec<Station>> {
     Ok(stations)
 }
 
-pub async fn get_by_id(db: &PgPool, station_id: station::Id) -> DatabaseResult<Station> {
-    let record = sqlx::query!(
+mod tests {
+    use sqlx::PgPool;
+
+    use crate::database::DatabaseResult;
+    use crate::model::{city, station, station_operator};
+    use crate::model::station::Station;
+    use crate::unit::{Coordinate, Latitude, Longitude};
+
+    #[allow(dead_code)]
+    pub async fn get_by_id(db: &PgPool, station_id: station::Id) -> DatabaseResult<Station> {
+        let record = sqlx::query!(
         r#"
         SELECT
 
@@ -158,107 +165,109 @@ pub async fn get_by_id(db: &PgPool, station_id: station::Id) -> DatabaseResult<S
         "#,
         i32::from(&station_id),
     )
-    .fetch_one(db)
-    .await?;
+            .fetch_one(db)
+            .await?;
 
-    let station = Station {
-        id: station_id,
+        let station = Station {
+            id: station_id,
 
-        city_id: record.city_id,
-        operator_id: record.operator_id,
+            city_id: record.city_id,
+            operator_id: record.operator_id,
 
-        name: station::Name {
-            finnish: record.name_finnish,
-            swedish: record.name_swedish,
-            english: record.name_english,
-        },
+            name: station::Name {
+                finnish: record.name_finnish,
+                swedish: record.name_swedish,
+                english: record.name_english,
+            },
 
-        address: station::Address {
-            finnish: record.address_finnish,
-            swedish: record.address_swedish,
-        },
+            address: station::Address {
+                finnish: record.address_finnish,
+                swedish: record.address_swedish,
+            },
 
-        location: Coordinate {
-            latitude: Latitude::North(record.latitude_north),
-            longitude: Longitude::East(record.longitude_east),
-        },
+            location: Coordinate {
+                latitude: Latitude::North(record.latitude_north),
+                longitude: Longitude::East(record.longitude_east),
+            },
 
-        capacity: record.capacity,
-    };
+            capacity: record.capacity,
+        };
 
-    Ok(station)
-}
+        Ok(station)
+    }
 
-#[sqlx::test]
-async fn test_station(db: PgPool) -> DatabaseResult<()> {
-    use crate::database;
+    #[sqlx::test]
+    async fn test_station(db: PgPool) -> DatabaseResult<()> {
+        use crate::database;
 
-    database::initialize(&db).await?;
+        database::initialize(&db).await?;
 
-    let city_name = city::Name {
-        finnish: "city name in finnish".to_string(),
-        swedish: "city name in swedish".to_string(),
-    };
+        let city_name = city::Name {
+            finnish: "city name in finnish".to_string(),
+            swedish: "city name in swedish".to_string(),
+        };
 
-    let operator_name = "station_operator's name".to_string();
+        let operator_name = "station_operator's name".to_string();
 
-    let city_id = database::city::add(&db, city_name.clone()).await?;
-    let operator_id = database::station_operator::add(&db, operator_name.clone()).await?;
+        let city_id = database::city::add(&db, city_name.clone()).await?;
+        let operator_id = database::station_operator::add(&db, operator_name.clone()).await?;
 
-    let station_id42 = station::Id(42);
-    let station_id123 = station::Id(123);
+        let station_id42 = station::Id(42);
+        let station_id123 = station::Id(123);
 
-    let station42 = get_mock_station(station_id42.clone(), city_id.clone(), operator_id.clone());
-    let station123 = get_mock_station(station_id123.clone(), city_id.clone(), operator_id.clone());
+        let station42 = get_mock_station(station_id42.clone(), city_id.clone(), operator_id.clone());
+        let station123 = get_mock_station(station_id123.clone(), city_id.clone(), operator_id.clone());
 
-    let rows = add_multiple(&db, vec![station42.clone(), station123.clone()]).await?;
+        let rows = database::station::add_multiple(&db, vec![station42.clone(), station123.clone()]).await?;
 
-    assert_eq!(rows, 2);
+        assert_eq!(rows, 2);
 
-    let station42_by_id = get_by_id(&db, station_id42.clone()).await?;
-    let station123_by_id = get_by_id(&db, station_id123.clone()).await?;
+        let station42_by_id = get_by_id(&db, station_id42.clone()).await?;
+        let station123_by_id = get_by_id(&db, station_id123.clone()).await?;
 
-    assert_eq!(station42, station42_by_id);
-    assert_eq!(station123, station123_by_id);
+        assert_eq!(station42, station42_by_id);
+        assert_eq!(station123, station123_by_id);
 
-    crate::database::empty(&db).await?;
+        database::empty(&db).await?;
 
-    let station42_by_id_result = get_by_id(&db, station_id42).await;
-    let station123_by_id_result = get_by_id(&db, station_id123).await;
+        let station42_by_id_result = get_by_id(&db, station_id42).await;
+        let station123_by_id_result = get_by_id(&db, station_id123).await;
 
-    assert!(station42_by_id_result.is_err());
-    assert!(station123_by_id_result.is_err());
+        assert!(station42_by_id_result.is_err());
+        assert!(station123_by_id_result.is_err());
 
-    Ok(())
-}
+        Ok(())
+    }
 
-fn get_mock_station(
-    station_id: station::Id,
-    city_id: city::Id,
-    operator_id: station_operator::Id,
-) -> Station {
-    Station {
-        id: station_id.clone(),
+    #[allow(dead_code)]
+    fn get_mock_station(
+        station_id: station::Id,
+        city_id: city::Id,
+        operator_id: station_operator::Id,
+    ) -> Station {
+        Station {
+            id: station_id.clone(),
 
-        city_id: city_id.clone(),
-        operator_id: operator_id.clone(),
+            city_id: city_id.clone(),
+            operator_id: operator_id.clone(),
 
-        name: station::Name {
-            finnish: format!("station {:?} name in Finnish", station_id),
-            swedish: format!("station {:?} name in Swedish", station_id),
-            english: format!("station {:?} name in English", station_id),
-        },
+            name: station::Name {
+                finnish: format!("station {:?} name in Finnish", station_id),
+                swedish: format!("station {:?} name in Swedish", station_id),
+                english: format!("station {:?} name in English", station_id),
+            },
 
-        address: station::Address {
-            finnish: format!("station {:?} address in Finnish", station_id),
-            swedish: format!("station {:?} address in Swedish", station_id),
-        },
+            address: station::Address {
+                finnish: format!("station {:?} address in Finnish", station_id),
+                swedish: format!("station {:?} address in Swedish", station_id),
+            },
 
-        location: Coordinate {
-            latitude: Latitude::North(24.819396),
-            longitude: Longitude::East(60.216067),
-        },
+            location: Coordinate {
+                latitude: Latitude::North(24.819396),
+                longitude: Longitude::East(60.216067),
+            },
 
-        capacity: 42,
+            capacity: 42,
+        }
     }
 }
