@@ -15,7 +15,7 @@ impl ToString for Id {
 
 impl From<&Id> for i32 {
     fn from(id: &Id) -> Self {
-        id.0.clone()
+        id.0
     }
 }
 

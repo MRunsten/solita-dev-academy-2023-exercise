@@ -248,8 +248,8 @@ mod tests {
         Station {
             id: station_id.clone(),
 
-            city_id: city_id.clone(),
-            operator_id: operator_id.clone(),
+            city_id,
+            operator_id,
 
             name: station::Name {
                 finnish: format!("station {station_id:?} name in Finnish"),
