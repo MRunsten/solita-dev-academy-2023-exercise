@@ -1,5 +1,6 @@
 @import '../app.scss';
 
+$table-header-text-color: $content-background;
 $table-border-radius: $border-radius;
 
 table.transparent-bg {
@@ -26,7 +27,7 @@ table.data-list > tbody tr > td {
 
 table.data-list > thead {
     height:56px;
-    color: $color3-text;
+    color: $table-header-text-color;
 }
 
 table.data-list > tbody > tr {
