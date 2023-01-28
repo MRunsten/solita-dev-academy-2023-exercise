@@ -43,12 +43,16 @@ export let data_max_per_page: number;
         color: $button-text-color;
         text-decoration: none;
         box-shadow: none;
-        
+
 		transition:all 0.1s;
     }
 
     .page-links a:hover {
         background: $accent;
+    }
+
+    .page-links a:active {
+        box-shadow: inset 0 0 8px $color2;
     }
 
     @media only screen and (max-width: 880px) {
