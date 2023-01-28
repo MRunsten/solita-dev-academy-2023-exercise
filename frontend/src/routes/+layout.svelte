@@ -31,6 +31,7 @@
 
 	$nav-button-text: $color1-text;
 	$nav-button-background: $color1;
+	$nav-button-hover-background: $color2;
 	$nav-button-active-background: $color3;
 
 	#app {
@@ -78,16 +79,30 @@
 
 	nav a {
 		background: $nav-button-background;
-		padding: 20px 32px;
+		padding: 20px 20px;
 		font-size: 1.2rem;
+
+		margin: 8px 16px;
+		border-radius:8px;
 
 		color: $nav-button-text;
 		text-decoration: none;
+
+		transition:all 0.1s;
+	}
+
+	nav a:hover {
+		background: $nav-button-hover-background;
 	}
 
 	nav a.active {
 		background: $nav-button-active-background;
 		border-right: 4px solid $accent;
+	}
+
+	nav a:hover,
+	nav a.active:hover {
+		background: $nav-button-hover-background;
 	}
 
 	@media only screen and (max-width: 880px) {
@@ -115,6 +130,8 @@
 		nav a {
 			height: 56px;
 			padding: 0;
+			margin:0;
+			border-radius: 0;
 			flex-grow: 1;
 			text-align: center;
 			line-height: 52px;
