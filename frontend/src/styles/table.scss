@@ -13,7 +13,8 @@ table.transparent-bg > tr > td {
 table.data-list {
     width:100%;
     background: $color3;
-    border: 1px solid $color3;
+    border: 0;
+    box-shadow: 0 0 2px $color1;
     border-spacing: 0;
     border-radius: $table-border-radius;
 }
