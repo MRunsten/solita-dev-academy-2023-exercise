@@ -78,7 +78,7 @@ async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
     tracing::info!("Added {stations_added} stations to the database");
 
     tracing::info!("Updating journeys");
-    for journey_url in journey_urls.split(",").collect::<Vec<&str>>().iter() {
+    for journey_url in journey_urls.split(',').collect::<Vec<&str>>().iter() {
         let journey_csv = download_url(journey_url).await?;
 
         tracing::info!("Updating journeys database");
