@@ -91,7 +91,7 @@ where
 
 async fn get_city_name_to_id_cache(
     db: &Database,
-    stations: &Vec<CsvBicycleStation>,
+    stations: &[CsvBicycleStation],
 ) -> DatabaseResult<HashMap<city::Name, city::Id>> {
     let mut city_name_to_id = HashMap::new();
 
@@ -118,7 +118,7 @@ async fn get_city_name_to_id_cache(
 
 async fn get_operator_name_to_id_cache(
     db: &Database,
-    stations: &Vec<CsvBicycleStation>,
+    stations: &[CsvBicycleStation],
 ) -> DatabaseResult<HashMap<station_operator::Name, station_operator::Id>> {
     let mut operator_name_to_id = HashMap::new();
 
