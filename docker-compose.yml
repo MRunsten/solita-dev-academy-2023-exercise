@@ -12,6 +12,10 @@ services:
     volumes:
       - mrunsten-solita-database-volume:/data/postgres
     ports:
+        # Note: Host address is bound mainly for the ease of development as there
+        # is no special development version of this compose file created for now.
+        #
+        # During production the host port bound can be removed (=> ":5432")
       - "5432:5432"
 
   backend-service:
@@ -29,6 +33,7 @@ services:
     env_file:
       - .env
     ports:
+      # Note: No host address bound, only internal container network port available.
       - ":3000"
 
   frontend-service:
@@ -42,10 +47,17 @@ services:
         # from the frontend container to HTTP clients, which use
         # this address to connect to the backend api.
         - PUBLIC_API_ADDRESS=$PUBLIC_API_ADDRESS
+
+        # PRIVATE_API_ADDRESS is used by the frontend container's
+        # SSR (server-side rendering) compiler to fetch data from the
+        # backend api as it may not have access to the "public" api
+        # address (such as localhost, as that is different inside the
+        # frontend container).
         - PRIVATE_API_ADDRESS=http://backend-service:3000/api
     depends_on:
       - backend-service
     ports:
+      # Note: No host address bound, only internal container network port available.
       - ":3000"
 
   reverse-proxy-service:
@@ -53,11 +65,10 @@ services:
     build:
       dockerfile: reverse_proxy/Dockerfile
     ports:
-      - "3000:80"
+      - "3000:80" # Reverse proxy exposed to docker host's port 3000 by default.
     depends_on:
       - backend-service
       - frontend-service
-
 
 volumes:
   mrunsten-solita-database-volume:
