@@ -119,6 +119,16 @@
     },
     "query": "DROP MATERIALIZED VIEW IF EXISTS station_view;\n"
   },
+  "416180e4fa92581b41557c079d41d753411864d007bd7902c1a5ed4a5d59db79": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "REFRESH MATERIALIZED VIEW journey_list_view WITH DATA"
+  },
   "459f036c86516135429af3d66a910ad017262cddade8393fe2e8efee8673af6e": {
     "describe": {
       "columns": [
@@ -204,6 +214,16 @@
       }
     },
     "query": "SELECT * FROM station_view WHERE station_id = $1"
+  },
+  "47519a3189262697f1f92adf9cea583b72f143197473a0a49f0d649ff6bcd844": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "REFRESH MATERIALIZED VIEW station_list_view WITH DATA"
   },
   "49f01dd4eba7d092da13588e60ffe34eb70894fd1fa976874df5fa337a3a2c62": {
     "describe": {
@@ -301,6 +321,16 @@
     },
     "query": "DROP TABLE IF EXISTS journeys;\r\n"
   },
+  "8865c8e5c6768e4e0bf6af666485c21337262c4218cf711d7ed5e17d1d543725": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "REFRESH MATERIALIZED VIEW station_view WITH DATA"
+  },
   "8a9ae0efbf4ec855cd8b048c4fc79ee630e74947963ae6585c289aefd5376ed3": {
     "describe": {
       "columns": [
@@ -375,16 +405,6 @@
     },
     "query": "\n        SELECT\n\n        city_id,\n        operator_id,\n\n        name_finnish,\n        name_swedish,\n        name_english,\n\n        address_finnish,\n        address_swedish,\n\n        latitude_north,\n        longitude_east,\n\n        capacity\n\n        FROM stations\n        WHERE station_id = $1\n        "
   },
-  "8d2f315065e23310f9eac609cdfe6b18892e26b3f90498ba408bf8cd66cee297": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": []
-      }
-    },
-    "query": "CREATE MATERIALIZED VIEW IF NOT EXISTS station_view AS\n    SELECT\n        stations.station_id,\n\n        stations.name_finnish,\n        stations.name_swedish,\n        stations.name_english,\n\n        stations.address_finnish,\n        stations.address_swedish,\n\n        cities.name_finnish as city_name_finnish,\n        cities.name_swedish as city_name_swedish,\n\n        station_operators.operator_name as operator_name,\n\n        stations.capacity,\n\n        departing_journeys.amount as journeys_departing_amount,\n        returning_journeys.amount as journeys_returning_amount\n    FROM\n        stations,\n        cities,\n        station_operators,\n        (SELECT departure_station_id, COUNT(*) as amount FROM journeys GROUP BY departure_station_id) as departing_journeys,\n        (SELECT return_station_id, COUNT(*) as amount FROM journeys GROUP BY return_station_id) as returning_journeys\n    WHERE\n        stations.station_id = departing_journeys.departure_station_id\n    AND\n        stations.station_id = returning_journeys.return_station_id\n    AND\n        stations.city_id = cities.city_id\n    AND\n        stations.operator_id = station_operators.operator_id\n"
-  },
   "96dcd7af05d72bb4a026e9c125c61c3b5ac27acfd292570e5f55264c1a5d7c1f": {
     "describe": {
       "columns": [],
@@ -394,26 +414,6 @@
       }
     },
     "query": "CREATE TABLE IF NOT EXISTS journeys (\n    id SERIAL PRIMARY KEY,\n\n    departure_date TIMESTAMP NOT NULL,\n    departure_station_id INT NOT NULL,\n\n    return_date TIMESTAMP NOT NULL,\n    return_station_id INT NOT NULL,\n\n    distance_meters DOUBLE PRECISION NOT NULL,\n    duration_seconds DOUBLE PRECISION NOT NULL,\n\n    CONSTRAINT fk_departure_station_id FOREIGN KEY(departure_station_id) REFERENCES stations(station_id),\n    CONSTRAINT fk_return_station_id FOREIGN KEY(return_station_id) REFERENCES stations(station_id),\n    CONSTRAINT unique_journey UNIQUE (departure_date, departure_station_id, return_date, return_station_id, distance_meters, duration_seconds)\n);\n"
-  },
-  "9d9077e3ac977b22e38f112977045affd834fc41f0c8057b9887bd231fc22fa6": {
-    "describe": {
-      "columns": [
-        {
-          "name": "operator_name",
-          "ordinal": 0,
-          "type_info": "Varchar"
-        }
-      ],
-      "nullable": [
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Int4"
-        ]
-      }
-    },
-    "query": "SELECT operator_name FROM station_operators WHERE operator_id = $1"
   },
   "a9f434800e3c68fc94e3d997ca90b2810c2da2ac572976101ec2f036da31601c": {
     "describe": {
@@ -446,16 +446,6 @@
     },
     "query": "CREATE INDEX IF NOT EXISTS return_date_index ON journey_list_view(return_date)"
   },
-  "c5f7011dec6ad82b77d0099f85f90824f38c706405ad29f3243496c971391eb1": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": []
-      }
-    },
-    "query": "REFRESH MATERIALIZED VIEW station_list_view"
-  },
   "cb731ff57f021f510dfc18980ef85a8cb1776eec2974cc2c4fe7e4be0b7e1534": {
     "describe": {
       "columns": [],
@@ -486,16 +476,6 @@
     },
     "query": "CREATE TABLE IF NOT EXISTS station_operators (\n    operator_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,\n    operator_name VARCHAR(255) NOT NULL\n);\n"
   },
-  "df56efa5d92c61101ae51bfe08037917d0bb5f31998deb1b3117404ff2081ca4": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": []
-      }
-    },
-    "query": "REFRESH MATERIALIZED VIEW journey_list_view"
-  },
   "e998f05b3ad2909a3ee952f966ea5ded8ce6969bad8d8b06834798a5c0b06cba": {
     "describe": {
       "columns": [],
@@ -505,6 +485,16 @@
       }
     },
     "query": "DROP MATERIALIZED VIEW IF EXISTS journey_list_view;\n"
+  },
+  "f3ea85eba7b48528950bf0dd8e95f9a308e57c202490c57422e06b1c9e907e70": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "CREATE MATERIALIZED VIEW IF NOT EXISTS station_view AS\n    SELECT\n        stations.station_id,\n\n        stations.name_finnish,\n        stations.name_swedish,\n        stations.name_english,\n\n        stations.address_finnish,\n        stations.address_swedish,\n\n        cities.name_finnish AS city_name_finnish,\n        cities.name_swedish AS city_name_swedish,\n\n        station_operators.operator_name AS operator_name,\n\n        stations.capacity,\n\n        CASE\n            WHEN departing_journeys.amount IS NULL THEN 0\n            ELSE departing_journeys.amount\n            END AS journeys_departing_amount,\n\n        CASE\n            WHEN returning_journeys.amount IS NULL THEN 0\n            ELSE returning_journeys.amount\n            END AS journeys_returning_amount\n\n    FROM\n        stations\n            LEFT JOIN (SELECT departure_station_id, COUNT(*) as amount FROM journeys GROUP BY departure_station_id) AS departing_journeys\n                      ON stations.station_id = departing_journeys.departure_station_id\n\n            LEFT JOIN (SELECT return_station_id, COUNT(*) as amount FROM journeys GROUP BY return_station_id) AS returning_journeys\n                      ON stations.station_id = returning_journeys.return_station_id,\n        cities,\n        station_operators\n    WHERE\n            stations.city_id = cities.city_id\n      AND\n            stations.operator_id = station_operators.operator_id\n"
   },
   "f688c99373c7d1da90799b09671de525c5973c7f01f80e61d99ca17ae1ccfa2a": {
     "describe": {
@@ -545,16 +535,6 @@
       }
     },
     "query": "SELECT operator_id FROM station_operators WHERE operator_name = $1"
-  },
-  "fb02410f93daf300630192cab5eac43d34b45a7cafd58741df85a69b6a266dc1": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": []
-      }
-    },
-    "query": "REFRESH MATERIALIZED VIEW station_view"
   },
   "fbcbfc7f1ac99fa7358e1f6de02a828f3e19e6f1f8ca377e7bd2a0572563f202": {
     "describe": {
