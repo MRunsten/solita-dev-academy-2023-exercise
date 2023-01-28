@@ -29,7 +29,7 @@ pub async fn journey_list(
 
     let query_str = query_builder.build().sql();
 
-    let mut rows = sqlx::query(query_str).fetch_all(db).await?;
+    let rows = sqlx::query(query_str).fetch_all(db).await?;
 
     let mut journey_list_view = Vec::new();
 

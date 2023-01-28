@@ -49,7 +49,7 @@ where
         .deserialize()
         .collect::<Vec<Result<CsvBicycleJourney, csv::Error>>>();
 
-    let mut valid_stations = get_valid_stations_ids(&db).await?;
+    let valid_stations = get_valid_stations_ids(&db).await?;
 
     let mut parsed_journeys = Vec::new();
 

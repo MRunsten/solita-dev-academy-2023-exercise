@@ -30,7 +30,7 @@ pub async fn station_list(
 
     let query_str = query_builder.build().sql();
 
-    let mut rows = sqlx::query(query_str)
+    let rows = sqlx::query(query_str)
         .fetch_all(db)
         .await?;
 
