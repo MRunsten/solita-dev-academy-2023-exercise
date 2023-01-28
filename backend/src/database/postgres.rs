@@ -3,7 +3,7 @@ pub mod journey;
 pub mod station;
 pub mod station_operator;
 
-use sqlx::{Connection, ConnectOptions, PgPool};
+use sqlx::{ConnectOptions, PgPool};
 use sqlx::postgres::PgConnectOptions;
 use std::env;
 

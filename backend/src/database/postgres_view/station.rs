@@ -1,5 +1,5 @@
 use crate::database::{view, Database, DatabaseResult};
-use crate::model::{city, station, station_operator};
+use crate::model::{city, station};
 
 pub async fn station(db: &Database, station_id: station::Id) -> DatabaseResult<view::Station> {
     let record = sqlx::query!(

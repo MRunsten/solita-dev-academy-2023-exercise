@@ -9,7 +9,6 @@ use crate::model::station;
 use dotenv::dotenv;
 use std::env;
 use std::error::Error;
-use std::io::Read;
 
 pub type BoxedError = Box<dyn Error>;
 
