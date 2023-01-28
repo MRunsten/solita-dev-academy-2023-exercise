@@ -48,9 +48,7 @@ fn define_routes(db: Database) -> Router {
         .nest("/stations", stations_api)
         .layer(ServiceBuilder::new().layer(cors));
 
-    let app = Router::new().nest("/api", api).with_state(db);
-
-    app
+    Router::new().nest("/api", api).with_state(db)
 }
 
 #[derive(Deserialize)]
