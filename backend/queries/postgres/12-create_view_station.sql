@@ -9,26 +9,33 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS station_view AS
         stations.address_finnish,
         stations.address_swedish,
 
-        cities.name_finnish as city_name_finnish,
-        cities.name_swedish as city_name_swedish,
+        cities.name_finnish AS city_name_finnish,
+        cities.name_swedish AS city_name_swedish,
 
-        station_operators.operator_name as operator_name,
+        station_operators.operator_name AS operator_name,
 
         stations.capacity,
 
-        departing_journeys.amount as journeys_departing_amount,
-        returning_journeys.amount as journeys_returning_amount
+        CASE
+            WHEN departing_journeys.amount IS NULL THEN 0
+            ELSE departing_journeys.amount
+            END AS journeys_departing_amount,
+
+        CASE
+            WHEN returning_journeys.amount IS NULL THEN 0
+            ELSE returning_journeys.amount
+            END AS journeys_returning_amount
+
     FROM
-        stations,
+        stations
+            LEFT JOIN (SELECT departure_station_id, COUNT(*) as amount FROM journeys GROUP BY departure_station_id) AS departing_journeys
+                      ON stations.station_id = departing_journeys.departure_station_id
+
+            LEFT JOIN (SELECT return_station_id, COUNT(*) as amount FROM journeys GROUP BY return_station_id) AS returning_journeys
+                      ON stations.station_id = returning_journeys.return_station_id,
         cities,
-        station_operators,
-        (SELECT departure_station_id, COUNT(*) as amount FROM journeys GROUP BY departure_station_id) as departing_journeys,
-        (SELECT return_station_id, COUNT(*) as amount FROM journeys GROUP BY return_station_id) as returning_journeys
+        station_operators
     WHERE
-        stations.station_id = departing_journeys.departure_station_id
-    AND
-        stations.station_id = returning_journeys.return_station_id
-    AND
-        stations.city_id = cities.city_id
-    AND
-        stations.operator_id = station_operators.operator_id
+            stations.city_id = cities.city_id
+      AND
+            stations.operator_id = station_operators.operator_id
