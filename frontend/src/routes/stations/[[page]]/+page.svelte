@@ -40,7 +40,7 @@
 		<tbody class="mobile">
 			{#each data.stations as station}
 				<tr on:click={() => goto('/station/' + station.station_id)}>
-					<td width="20%"># {station.station_id}</td>
+					<td width="20%">#{station.station_id}</td>
 					<td width="20%">{station.capacity}<i class="emoji-on-right">🚲</i></td>
 					<td width="60%">
 						<table>
@@ -67,8 +67,8 @@
 		<tbody class="large-display">
 			{#each data.stations as station}
 				<tr>
-					<td width="10%"># {station.station_id}</td>
-					<td width="10%">{station.capacity}<i class="emoji-on-right">🚲</i></td>
+					<td width="15%">#{station.station_id}</td>
+					<td width="15%">{station.capacity}<i class="emoji-on-right">🚲</i></td>
 					<td width="40%">
 						<table class="transparent-bg">
 							<tr><td><i class="emoji-on-left">🇫🇮</i>{station.name.finnish}</td></tr>
@@ -84,9 +84,7 @@
 						</table>
 					</td>
 					<td width="10%">
-						<a class="underline-on-hover" style="padding:16px" href="/station/{station.station_id}"
-							>View</a
-						>
+						<a class="underline-on-hover" style="padding:16px" href="/station/{station.station_id}">View</a>
 					</td>
 				</tr>
 			{/each}
