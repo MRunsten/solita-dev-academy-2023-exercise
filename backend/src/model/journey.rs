@@ -30,6 +30,8 @@ pub struct JourneyInsert {
 }
 
 impl JourneyInsert {
+
+    // Note: The following constraints could also be added to the database.
     pub fn departure_before_return(&self) -> bool {
         self.departure_date < self.return_date
     }

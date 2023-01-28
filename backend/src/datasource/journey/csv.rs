@@ -116,3 +116,153 @@ async fn get_valid_stations_ids(
 
     Ok(HashSet::from_iter(valid_stations))
 }
+
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+    use sqlx::PgPool;
+    use tokio::time;
+    use crate::BoxedError;
+
+    #[sqlx::test]
+    async fn disallow_less_than_10_second(db: PgPool) -> Result<(), BoxedError> {
+        use std::fs::File;
+
+        use crate::model;
+        use crate::database;
+        use crate::datasource;
+        use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
+
+        database::initialize(&db).await?;
+
+        let station_test_data = File::open("./tests/pipeline_test_data/station_pipeline.csv")?;
+        let stations_added = datasource::station::csv::update(&db, station_test_data).await?;
+        assert_eq!(stations_added, 2);
+
+        let journey_test_data = File::open("./tests/pipeline_test_data/journey_disallows_less_than_10_second.csv")?;
+        let journeys_added = datasource::journey::csv::update(&db, journey_test_data).await?;
+        assert_eq!(journeys_added.rows_had, 1);
+        assert_eq!(journeys_added.new_rows_inserted, 1);
+
+        database::refresh_views(&db).await?;
+
+        let params = JourneyListParams {
+            order_by: JourneyListOrder::DepartureDate,
+            order_direction: OrderDirection::Descending,
+            page: 0,
+            limit: 100,
+        };
+
+        let journeys = database::view::journey_list(&db, &params).await?;
+        assert_eq!(journeys.len(), 1);
+
+        journeys.iter().for_each(|j| {
+            assert!(j.duration_minutes >= 0.16);
+        });
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn disallow_less_than_10_meter(db: PgPool) -> Result<(), BoxedError> {
+        use std::fs::File;
+
+        use crate::model;
+        use crate::database;
+        use crate::datasource;
+        use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
+
+        database::initialize(&db).await?;
+
+        let station_test_data = File::open("./tests/pipeline_test_data/station_pipeline.csv")?;
+        let stations_added = datasource::station::csv::update(&db, station_test_data).await?;
+        assert_eq!(stations_added, 2);
+
+        let journey_test_data = File::open("./tests/pipeline_test_data/journey_disallows_less_than_10_meter.csv")?;
+        let journeys_added = datasource::journey::csv::update(&db, journey_test_data).await?;
+        assert_eq!(journeys_added.rows_had, 1);
+        assert_eq!(journeys_added.new_rows_inserted, 1);
+
+        database::refresh_views(&db).await?;
+
+        let params = JourneyListParams {
+            order_by: JourneyListOrder::DepartureDate,
+            order_direction: OrderDirection::Descending,
+            page: 0,
+            limit: 100,
+        };
+
+        let journeys = database::view::journey_list(&db, &params).await?;
+        assert_eq!(journeys.len(), 1);
+
+        journeys.iter().for_each(|j| {
+           assert!(j.distance_kilometers >= 0.0099)
+        });
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn disallow_invalid_stations(db: PgPool) -> Result<(), BoxedError> {
+        use std::fs::File;
+
+        use crate::model;
+        use crate::database;
+        use crate::datasource;
+        use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
+
+        database::initialize(&db).await?;
+
+        let station_test_data = File::open("./tests/pipeline_test_data/station_pipeline.csv")?;
+        let stations_added = datasource::station::csv::update(&db, station_test_data).await?;
+        assert_eq!(stations_added, 2);
+
+        let journey_test_data = File::open("./tests/pipeline_test_data/journey_disallows_invalid_stations.csv")?;
+        let journeys_added = datasource::journey::csv::update(&db, journey_test_data).await?;
+        assert_eq!(journeys_added.rows_had, 1);
+        assert_eq!(journeys_added.new_rows_inserted, 1);
+
+        database::refresh_views(&db).await?;
+
+        let params = JourneyListParams {
+            order_by: JourneyListOrder::DepartureDate,
+            order_direction: OrderDirection::Descending,
+            page: 0,
+            limit: 100,
+        };
+
+        let journeys = database::view::journey_list(&db, &params).await?;
+        assert_eq!(journeys.len(), 1);
+
+        journeys.iter().for_each(|j| {
+            assert_eq!(j.departure_station.station_id, model::station::Id(42));
+            assert_eq!(j.return_station.station_id, model::station::Id(123));
+        });
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn disallow_duplicates(db: PgPool) -> Result<(), BoxedError> {
+        use std::fs::File;
+
+        use crate::model;
+        use crate::database;
+        use crate::datasource;
+        use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
+
+        database::initialize(&db).await?;
+
+        let station_test_data = File::open("./tests/pipeline_test_data/station_pipeline.csv")?;
+        let stations_added = datasource::station::csv::update(&db, station_test_data).await?;
+        assert_eq!(stations_added, 2);
+
+        let journey_test_data = File::open("./tests/pipeline_test_data/journey_disallows_duplicates.csv")?;
+        let journeys_added = datasource::journey::csv::update(&db, journey_test_data).await?;
+        assert_eq!(journeys_added.rows_had, 3);
+        assert_eq!(journeys_added.new_rows_inserted, 1);
+
+        Ok(())
+    }
+}
