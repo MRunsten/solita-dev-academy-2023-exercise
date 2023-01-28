@@ -17,23 +17,6 @@ pub async fn add(db: &PgPool, name: city::Name) -> DatabaseResult<city::Id> {
     Ok(city_id)
 }
 
-pub async fn get_by_id(db: &PgPool, city_id: city::Id) -> DatabaseResult<City> {
-    let record = sqlx::query!(
-            "SELECT name_finnish, name_swedish FROM cities WHERE city_id = $1",
-            &city_id
-        )
-        .fetch_one(db)
-        .await?;
-
-    Ok(City {
-        id: city_id,
-        name: city::Name {
-            finnish: record.name_finnish,
-            swedish: record.name_swedish,
-        },
-    })
-}
-
 pub async fn get_by_name(db: &PgPool, city_name: city::Name) -> DatabaseResult<City> {
     let city_id = sqlx::query!(
             "SELECT city_id FROM cities WHERE name_finnish = $1 and name_swedish = $2",
@@ -69,50 +52,77 @@ pub async fn get_or_add_by_name(db: &PgPool, city_name: city::Name) -> DatabaseR
     Ok(city)
 }
 
-#[sqlx::test]
-async fn postgres_test_city(db: PgPool) -> DatabaseResult<()> {
-    crate::database::initialize(&db).await?;
+mod tests {
+    use sqlx::PgPool;
+    use crate::database::DatabaseResult;
+    use crate::model::city;
+    use crate::model::city::City;
 
-    let city_name1 = city::Name {
-        finnish: "finnish_name1".to_string(),
-        swedish: "swedish_name1".to_string(),
-    };
+    #[allow(dead_code)]
+    pub async fn get_by_id(db: &PgPool, city_id: city::Id) -> DatabaseResult<City> {
+        let record = sqlx::query!(
+            "SELECT name_finnish, name_swedish FROM cities WHERE city_id = $1",
+            &city_id
+        )
+            .fetch_one(db)
+            .await?;
 
-    let city_name2 = city::Name {
-        finnish: "finnish_name2".to_string(),
-        swedish: "swedish_name2".to_string(),
-    };
+        Ok(City {
+            id: city_id,
+            name: city::Name {
+                finnish: record.name_finnish,
+                swedish: record.name_swedish,
+            },
+        })
+    }
 
-    let city_id1 = add(&db, city_name1.clone()).await?;
-    let city_id2 = add(&db, city_name2.clone()).await?;
+    #[sqlx::test]
+    async fn postgres_test_city(db: PgPool) -> DatabaseResult<()> {
+        use crate::database;
 
-    let city1_by_id = get_by_id(&db, city_id1).await?;
-    let city2_by_id = get_by_id(&db, city_id2).await?;
+        database::initialize(&db).await?;
 
-    let city1_by_name = get_by_name(&db, city_name1.clone()).await?;
-    let city2_by_name = get_by_name(&db, city_name2.clone()).await?;
+        let city_name1 = city::Name {
+            finnish: "finnish_name1".to_string(),
+            swedish: "swedish_name1".to_string(),
+        };
 
-    assert!(city_id1 != city_id2);
+        let city_name2 = city::Name {
+            finnish: "finnish_name2".to_string(),
+            swedish: "swedish_name2".to_string(),
+        };
 
-    assert_eq!(city_name1.finnish, city1_by_id.name.finnish);
-    assert_eq!(city_name1.swedish, city1_by_id.name.swedish);
+        let city_id1 = database::city::add(&db, city_name1.clone()).await?;
+        let city_id2 = database::city::add(&db, city_name2.clone()).await?;
 
-    assert_eq!(city_name1.finnish, city1_by_name.name.finnish);
-    assert_eq!(city_name1.swedish, city1_by_name.name.swedish);
+        let city1_by_id = get_by_id(&db, city_id1).await?;
+        let city2_by_id = get_by_id(&db, city_id2).await?;
 
-    assert_eq!(city_name2.finnish, city2_by_id.name.finnish);
-    assert_eq!(city_name2.swedish, city2_by_id.name.swedish);
+        let city1_by_name = database::city::get_by_name(&db, city_name1.clone()).await?;
+        let city2_by_name = database::city::get_by_name(&db, city_name2.clone()).await?;
 
-    assert_eq!(city_name2.finnish, city2_by_name.name.finnish);
-    assert_eq!(city_name2.swedish, city2_by_name.name.swedish);
+        assert!(city_id1 != city_id2);
 
-    crate::database::empty(&db).await?;
+        assert_eq!(city_name1.finnish, city1_by_id.name.finnish);
+        assert_eq!(city_name1.swedish, city1_by_id.name.swedish);
 
-    let city1_by_id_result = get_by_id(&db, city_id1).await;
-    let city2_by_id_result = get_by_id(&db, city_id2).await;
+        assert_eq!(city_name1.finnish, city1_by_name.name.finnish);
+        assert_eq!(city_name1.swedish, city1_by_name.name.swedish);
 
-    assert!(city1_by_id_result.is_err());
-    assert!(city2_by_id_result.is_err());
+        assert_eq!(city_name2.finnish, city2_by_id.name.finnish);
+        assert_eq!(city_name2.swedish, city2_by_id.name.swedish);
 
-    Ok(())
+        assert_eq!(city_name2.finnish, city2_by_name.name.finnish);
+        assert_eq!(city_name2.swedish, city2_by_name.name.swedish);
+
+        database::empty(&db).await?;
+
+        let city1_by_id_result = get_by_id(&db, city_id1).await;
+        let city2_by_id_result = get_by_id(&db, city_id2).await;
+
+        assert!(city1_by_id_result.is_err());
+        assert!(city2_by_id_result.is_err());
+
+        Ok(())
+    }
 }
