@@ -100,7 +100,7 @@
 		margin-top: 16px;
 	}
 
-	table.data-list > tbody > tr:nth-child(2n) {
+	table.data-list > tbody > tr:nth-child(2n) > td {
 		background: $content-background-alt;
 	}
 

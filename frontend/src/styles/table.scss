@@ -44,6 +44,14 @@ table.data-list a.underline-on-hover:hover {
     text-decoration: underline;
 }
 
+table.data-list > tbody > tr:last-child > td:first-child {
+    border-bottom-left-radius: $table-border-radius;
+}
+
+table.data-list > tbody > tr:last-child > td:last-child {
+    border-bottom-right-radius: $table-border-radius;
+}
+
 @media only screen and (max-width: 880px) {
     #content {
         margin:0;
@@ -66,5 +74,10 @@ table.data-list a.underline-on-hover:hover {
 
     table.data-list > thead {
         height:40px;
+    }
+
+    table.data-list > tbody > tr:last-child > td:first-child,
+    table.data-list > tbody > tr:last-child > td:last-child  {
+           border-radius: 0;
     }
 }
