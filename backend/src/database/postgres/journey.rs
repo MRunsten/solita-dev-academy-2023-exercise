@@ -22,7 +22,7 @@ pub async fn add_multiple(
         match csv_writer.serialize(tmp_tuple) {
             Ok(_) => (),
             Err(e) => {
-                println!("warning: csv writer could not serialize journeys: {}", e);
+                println!("warning: csv writer could not serialize journeys: {e}");
 
                 return Ok(JourneyInsertResult {
                     rows_had: journeys.len() as u64,
@@ -37,7 +37,7 @@ pub async fn add_multiple(
     let csv_data = match csv_writer.into_inner() {
         Ok(csv_data) => csv_data,
         Err(e) => {
-            println!("warning: csv writer could not create a byte array: {}", e);
+            println!("warning: csv writer could not create a byte array: {e}");
 
             return Ok(JourneyInsertResult {
                 rows_had: journeys.len() as u64,

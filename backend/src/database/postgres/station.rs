@@ -26,7 +26,7 @@ pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult
         match csv_writer.serialize(tmp_tuple) {
             Ok(_) => (),
             Err(e) => {
-                println!("warning: csv writer could not serialize stations: {}", e);
+                println!("warning: csv writer could not serialize stations: {e}");
 
                 return Ok(0);
             }
@@ -64,7 +64,7 @@ pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult
     let csv_data = match csv_writer.into_inner() {
         Ok(csv_data) => csv_data,
         Err(e) => {
-            println!("warning: csv writer could not create a byte array: {}", e);
+            println!("warning: csv writer could not create a byte array: {e}");
 
             return Ok(0);
         }
@@ -252,14 +252,14 @@ mod tests {
             operator_id: operator_id.clone(),
 
             name: station::Name {
-                finnish: format!("station {:?} name in Finnish", station_id),
-                swedish: format!("station {:?} name in Swedish", station_id),
-                english: format!("station {:?} name in English", station_id),
+                finnish: format!("station {station_id:?} name in Finnish"),
+                swedish: format!("station {station_id:?} name in Swedish"),
+                english: format!("station {station_id:?} name in English"),
             },
 
             address: station::Address {
-                finnish: format!("station {:?} address in Finnish", station_id),
-                swedish: format!("station {:?} address in Swedish", station_id),
+                finnish: format!("station {station_id:?} address in Finnish"),
+                swedish: format!("station {station_id:?} address in Swedish"),
             },
 
             location: Coordinate {
