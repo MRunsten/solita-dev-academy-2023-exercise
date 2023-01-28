@@ -43,8 +43,8 @@ where
         .deserialize()
         .collect::<Result<Vec<CsvBicycleStation>, csv::Error>>()?;
 
-    let city_to_id = get_city_name_to_id_cache(&db, &csv_stations).await?;
-    let operator_to_id = get_operator_name_to_id_cache(&db, &csv_stations).await?;
+    let city_to_id = get_city_name_to_id_cache(db, &csv_stations).await?;
+    let operator_to_id = get_operator_name_to_id_cache(db, &csv_stations).await?;
 
     let mut parsed_stations = Vec::new();
 
@@ -86,7 +86,7 @@ where
         parsed_stations.push(station);
     }
 
-    Ok(database::station::add_multiple(&db, parsed_stations).await?)
+    Ok(database::station::add_multiple(db, parsed_stations).await?)
 }
 
 async fn get_city_name_to_id_cache(
@@ -106,7 +106,7 @@ async fn get_city_name_to_id_cache(
             swedish: name_swedish.clone(),
         };
 
-        let city_id = database::city::get_or_add_by_name(&db, city_name.clone())
+        let city_id = database::city::get_or_add_by_name(db, city_name.clone())
             .await?
             .id;
 
@@ -132,7 +132,7 @@ async fn get_operator_name_to_id_cache(
 
     for operator_name in unique_operators.iter() {
         let operator_id =
-            database::station_operator::get_or_add_by_name(&db, operator_name.clone())
+            database::station_operator::get_or_add_by_name(db, operator_name.clone())
                 .await?
                 .id;
 

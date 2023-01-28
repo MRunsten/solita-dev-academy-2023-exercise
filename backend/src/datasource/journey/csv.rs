@@ -49,7 +49,7 @@ where
         .deserialize()
         .collect::<Vec<Result<CsvBicycleJourney, csv::Error>>>();
 
-    let valid_stations = get_valid_stations_ids(&db).await?;
+    let valid_stations = get_valid_stations_ids(db).await?;
 
     let mut parsed_journeys = Vec::new();
 
@@ -105,14 +105,14 @@ where
         }
     }
 
-    Ok(database::journey::add_multiple(&db, parsed_journeys).await?)
+    Ok(database::journey::add_multiple(db, parsed_journeys).await?)
 }
 
 async fn get_valid_stations_ids(
     db: &Database,
 ) -> DatabaseResult<HashSet<station::Id>> {
 
-    let valid_stations = database::station::get_all(&db).await?.into_iter().map(|station| station.id);
+    let valid_stations = database::station::get_all(db).await?.into_iter().map(|station| station.id);
 
     Ok(HashSet::from_iter(valid_stations))
 }

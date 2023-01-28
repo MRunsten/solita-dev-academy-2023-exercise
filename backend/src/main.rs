@@ -67,14 +67,14 @@ async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
     let journey_urls = env::var("LOAD_JOURNEYS_FROM")
         .expect("Environment variable LOAD_JOURNEYS_FROM was undefined");
 
-    database::empty(&db).await?;
-    database::initialize(&db).await?;
+    database::empty(db).await?;
+    database::initialize(db).await?;
 
     tracing::info!("Updating stations");
     let stations_csv = download_url(stations_url.as_str()).await?;
 
     tracing::info!("Updating stations database");
-    let stations_added = datasource::station::csv::update(&db, stations_csv.as_bytes()).await?;
+    let stations_added = datasource::station::csv::update(db, stations_csv.as_bytes()).await?;
     tracing::info!("Added {stations_added} stations to the database");
 
     tracing::info!("Updating journeys");
@@ -83,7 +83,7 @@ async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
 
         tracing::info!("Updating journeys database");
 
-        let insert_result = datasource::journey::csv::update(&db, journey_csv.as_bytes()).await?;
+        let insert_result = datasource::journey::csv::update(db, journey_csv.as_bytes()).await?;
         let parsed_rows = insert_result.rows_had;
         let unique_new_rows = insert_result.new_rows_inserted;
         let skipped_rows = parsed_rows - unique_new_rows;
@@ -92,7 +92,7 @@ async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
     }
 
     tracing::info!("Refreshing materialized views");
-    database::refresh_views(&db).await?;
+    database::refresh_views(db).await?;
 
     tracing::info!("Database reloaded");
     Ok(())
