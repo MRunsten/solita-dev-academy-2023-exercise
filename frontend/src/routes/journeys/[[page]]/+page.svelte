@@ -18,10 +18,10 @@
 	<table class="data-list">
 		<thead>
 			<tr>
-				<td>Departure</td>
+				<td><span>Departure</span></td>
 				<td />
-				<td>Return</td>
-				<td>Info</td>
+				<td><span>Return</span></td>
+				<td><span>Info</span></td>
 			</tr>
 		</thead>
 		<tbody>

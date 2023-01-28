@@ -7,7 +7,7 @@
 <div id="content">
 	<table class="data-list mobile-no-margin">
 		<thead>
-			<tr><td><h2>Bicycle Station {data.station_id}</h2></td></tr>
+			<tr><td><h2 style="margin-left:16px">Bicycle Station {data.station_id}</h2></td></tr>
 		</thead>
 
 		<tbody>
@@ -20,8 +20,8 @@
 	<table class="data-list">
 		<thead>
 			<tr>
-				<td width="50%">Address</td>
-				<td width="50%">City</td>
+				<td width="50%"><span>Address</span></td>
+				<td width="50%"><span>City</span></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -46,7 +46,7 @@
 
 	<table class="data-list mobile-no-margin">
 		<thead>
-			<tr><td>Operator</td></tr>
+			<tr><td><span>Operator</td></tr>
 		</thead>
 
 		<tbody>
@@ -63,8 +63,8 @@
 	<table class="data-list">
 		<thead>
 			<tr>
-				<td width="50%">Data</td>
-				<td>Value</td>
+				<td width="75%"><span>Data</span></td>
+				<td><span>Value</span></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -84,10 +84,6 @@
 <style lang="scss">
 	@import '../../../styles/table.scss';
 	@import '../../../styles/emoji.scss';
-
-	h1 {
-		margin-bottom: 0;
-	}
 
 	#content {
 		width: 100%;
@@ -116,6 +112,14 @@
 		table.data-list,
 		table.mobile-no-margin {
 			margin-top: 0;
+		}
+
+		table.data-list > thead > tr > td {
+			padding:0;
+		}
+
+		table.data-list > tbody > tr > td {
+			padding-left:16px;
 		}
 	}
 </style>

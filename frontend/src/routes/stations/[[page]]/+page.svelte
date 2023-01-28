@@ -31,9 +31,9 @@
 	<table class="data-list mobile">
 		<thead>
 			<tr>
-				<td>#</td>
-				<td>Capacity</td>
-				<td>Name</td>
+				<td><span>#</span></td>
+				<td><span>Capacity</span></td>
+				<td><span>Name</span></td>
 			</tr>
 		</thead>
 
@@ -57,10 +57,10 @@
 	<table class="data-list large-display" bind:this={table_top}>
 		<thead>
 			<tr>
-				<td>#</td>
-				<td>Capacity</td>
-				<td>Name</td>
-				<td>City/Operarator</td>
+				<td><span>#</span></td>
+				<td><span>Capacity</span></td>
+				<td><span>Name</span></td>
+				<td><span>City/Operarator</span></td>
 				<td />
 			</tr>
 		</thead>
