@@ -111,6 +111,7 @@ If you wish to only start a specific service, such as the database service for d
 ```
 docker compose up [-d] database-service
 ```
+Note: You can also start the container with `docker-compose run <service-name>`, but this is probably not something that you want to do as this will not expose the container to a (service stack internal or local) network.
 
 If you wish to only build a single service of this application, you can use the command:
 ```
