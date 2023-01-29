@@ -1,23 +1,24 @@
-# create-svelte
+# Bicycle application frontend
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Development requirements
 
-## Creating a project
+* node [https://nodejs.org/en/](https://nodejs.org/en/)
+* npm (installed usually with node) (other JavaScript/TypeScript package managers may also work)
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+After your system has a working node & npm installation, run the command
 ```
+npm i
+```
+which is short for npm install and will download and install required packages for your system. 
 
-## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+It is suggested to start a backend service before running the frontend development server. The backend service can be run through Docker Compose or directly in development mode. However, the simple solution is to run `docker-compose up` in the parent folder as this will start all required services. Note that this will also start an old, already built version of the frontend, but this doesn't really matter for frontend development: The frontend development server will be running on a different port, but it and your browser can still access the backend api from the Docker Compose stack due to current CORS (Cross-Origin Resource Sharing) configuration on the backend service.
 
+ote that running the backend also requires a database service or server to be running (for example via docker compose).
+
+The frontend development server can be started without any backend running, but this will mostly show errors when viewed in browser.
+
+You can start the frontend development server (`vite`) with
 ```bash
 npm run dev
 
@@ -25,14 +26,12 @@ npm run dev
 npm run dev -- --open
 ```
 
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
+## Building this application
+You can use the following command to create a release-ready version of this application, but the actual frontend service image is built via Docker Compose, as explained in the parent directory of this file.
+```
+npm build
 ```
 
-You can preview the production build with `npm run preview`.
+## Tests
+Unfortunately the frontend service currently does not have any automatic tests created. However, initial (non-working) configuration for automatic testing does exist for [Playwright](https://playwright.dev/).
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
