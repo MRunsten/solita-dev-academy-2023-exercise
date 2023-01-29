@@ -141,19 +141,15 @@ async fn get_operator_name_to_id_cache(
 
 #[cfg(test)]
 mod tests {
+    use crate::database;
+    use crate::datasource;
+    use crate::model;
     use crate::BoxedError;
     use sqlx::PgPool;
-    use std::time::Duration;
-    use tokio::time;
+    use std::fs::File;
 
     #[sqlx::test]
     async fn data_pipeline(db: PgPool) -> Result<(), BoxedError> {
-        use std::fs::File;
-
-        use crate::database;
-        use crate::datasource;
-        use crate::model;
-
         database::initialize(&db).await?;
 
         let test_data = File::open("./tests/pipeline_test_data/station_pipeline.csv")?;

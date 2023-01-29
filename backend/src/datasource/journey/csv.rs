@@ -119,19 +119,17 @@ async fn get_valid_stations_ids(db: &Database) -> DatabaseResult<HashSet<station
 
 #[cfg(test)]
 mod tests {
+    use crate::database;
+    use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
+    use crate::datasource;
+    use crate::model;
     use crate::BoxedError;
     use sqlx::PgPool;
-    use std::time::Duration;
-    use tokio::time;
+    use std::fs::File;
 
     #[sqlx::test]
     async fn disallow_less_than_10_second(db: PgPool) -> Result<(), BoxedError> {
         use std::fs::File;
-
-        use crate::database;
-        use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
-        use crate::datasource;
-        use crate::model;
 
         database::initialize(&db).await?;
 
@@ -167,13 +165,6 @@ mod tests {
 
     #[sqlx::test]
     async fn disallow_less_than_10_meter(db: PgPool) -> Result<(), BoxedError> {
-        use std::fs::File;
-
-        use crate::database;
-        use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
-        use crate::datasource;
-        use crate::model;
-
         database::initialize(&db).await?;
 
         let station_test_data = File::open("./tests/pipeline_test_data/station_pipeline.csv")?;
@@ -208,13 +199,6 @@ mod tests {
 
     #[sqlx::test]
     async fn disallow_invalid_stations(db: PgPool) -> Result<(), BoxedError> {
-        use std::fs::File;
-
-        use crate::database;
-        use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
-        use crate::datasource;
-        use crate::model;
-
         database::initialize(&db).await?;
 
         let station_test_data = File::open("./tests/pipeline_test_data/station_pipeline.csv")?;
@@ -250,13 +234,6 @@ mod tests {
 
     #[sqlx::test]
     async fn disallow_duplicates(db: PgPool) -> Result<(), BoxedError> {
-        use std::fs::File;
-
-        use crate::database;
-        use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
-        use crate::datasource;
-        use crate::model;
-
         database::initialize(&db).await?;
 
         let station_test_data = File::open("./tests/pipeline_test_data/station_pipeline.csv")?;
