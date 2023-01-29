@@ -43,8 +43,6 @@ where
     Source: Read + Sync + Send,
 {
     let csv_journeys = csv::ReaderBuilder::new()
-        // .quote_style(csv::QuoteStyle::Necessary)
-        // .flexible(true)
         .from_reader(source)
         .deserialize()
         .collect::<Vec<Result<CsvBicycleJourney, csv::Error>>>();
