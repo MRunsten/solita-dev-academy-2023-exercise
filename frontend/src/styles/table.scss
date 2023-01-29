@@ -20,18 +20,22 @@ table.data-list {
     border-radius: $table-border-radius;
 }
 
-table.data-list > thead tr > td,
-table.data-list > tbody tr > td {
+table.data-list > thead > tr > td,
+table.data-list > tbody > tr > td {
     padding:8px 16px;
+}
+
+table.data-list > thead > tr > td {
+    background:$color3;
+}
+
+table.data-list > tbody > tr > td {
+    background:$content-background;
 }
 
 table.data-list > thead {
     height:56px;
     color: $table-header-text-color;
-}
-
-table.data-list > tbody > tr {
-    background:$content-background;
 }
 
 table.data-list a {
@@ -44,6 +48,14 @@ table.data-list a.underline-on-hover {
 
 table.data-list a.underline-on-hover:hover {
     text-decoration: underline;
+}
+
+table.data-list > thead > tr:first-child > td:first-child {
+    border-top-left-radius: $table-border-radius;
+}
+
+table.data-list > thead > tr:first-child > td:last-child {
+    border-top-right-radius: $table-border-radius;
 }
 
 table.data-list > tbody > tr:last-child > td:first-child {
@@ -71,8 +83,8 @@ table.data-list > thead > tr > td > span {
         margin:0;
     }
 
-    table.data-list > thead tr > td,
-    table.data-list > tbody tr > td {
+    table.data-list > thead > tr > td,
+    table.data-list > tbody > tr > td {
         padding:6px 8px;
     }
 
