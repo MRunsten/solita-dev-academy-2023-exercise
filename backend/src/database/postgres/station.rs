@@ -131,6 +131,7 @@ pub async fn get_all(db: &PgPool) -> DatabaseResult<Vec<Station>> {
     Ok(stations)
 }
 
+#[cfg(test)]
 mod tests {
     use sqlx::PgPool;
 
