@@ -60,7 +60,7 @@
 				<td><span>#</span></td>
 				<td><span>Capacity</span></td>
 				<td><span>Name</span></td>
-				<td><span>City/Operarator</span></td>
+				<td><span>City/Operator</span></td>
 				<td />
 			</tr>
 		</thead>
