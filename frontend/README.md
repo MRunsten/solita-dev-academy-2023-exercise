@@ -35,3 +35,21 @@ npm build
 ## Tests
 Unfortunately the frontend service currently does not have any automatic tests created. However, initial (non-working) configuration for automatic testing does exist for [Playwright](https://playwright.dev/).
 
+# Additional notes
+
+## File hierarchy
+
+Note: Only partial description is currently provided.
+
+* src/
+  * lib/
+    * Contains components that this frontend application can use in routes
+  * routes/
+    * File system hierarchy defines the route hierarchy for this frontend framework. For more information, see [https://kit.svelte.dev/docs/routing](https://kit.svelte.dev/docs/routing).
+    * Pages and their functionality are defined within the routes/ folder.
+  * styles/
+    * Contains general styling related code (*.scss) for this frontend application.
+  * app.html, app.scss
+    * The root components of this application.
+    * Currently, scss color parameters are also defined in app.scss.
+
