@@ -139,7 +139,7 @@ docker compose build --no-cache backend-service
     * Well performing relational database that I have also used before.
 * Frontend
   * [SvelteKit](https://kit.svelte.dev/)
-    * General interest for Svelte as it has been one of the most liked frontend frameworks for a while. SvelteKit was chosen it provided a ready-to-use frontend development and deployment framework for Svelte. I did not have prior experience using Svelte(Kit).
+    * General interest for Svelte as it has been one of the most liked frontend frameworks for a while. SvelteKit was chosen as it provides a ready-to-use frontend development and deployment framework for Svelte. I did not have prior experience using Svelte(Kit).
   * [TypeScript](https://www.typescriptlang.org/)
     * I prefer type-safety for everything that is not a single use script for example.
     * I have used TypeScript before.
