@@ -49,6 +49,16 @@ Intermediate compilation related files will be stored inside a directory called 
 
 ## File hierarchy
 
+The `Cargo.toml` and `Cargo.lock` files contain dependency, version and feature information of this application.
+
+**queries/**
+* This directory contains database table definitions, creation and dropping queries for specific database systems if required by the used database system. This application currently only supports the `PostgreSQL` database system.
+
+**tests/**
+* General test related code. Currently only contains test data, as all tests are included directly in source files at least for now, which is a common Rust pattern.
+
+**src/**
+
 * api/
   * Contains modules related to the HTTP API which this backend application provides. Uses database/*_view modules for now, but if database state changes through the API would be supported, the api/ modules could also use other database modules that are not related to views.
   
