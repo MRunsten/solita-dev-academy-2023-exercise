@@ -52,6 +52,7 @@ pub async fn get_or_add_by_name(db: &PgPool, city_name: city::Name) -> DatabaseR
     Ok(city)
 }
 
+#[cfg(test)]
 mod tests {
     use crate::database::DatabaseResult;
     use crate::model::city;
