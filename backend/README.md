@@ -8,7 +8,7 @@
   * `cargo install sqlx-cli`
   * Required to update database queries for offline compilation. If you are not going to update database queries, this is not required.
 
-* Running database service (Run `docker compose up -d database` in the parent folder for example.)
+* Running database service (Run `docker compose up -d database-service` in the parent folder for example.)
   * Database queries are checked during compile time by the `sqlx` crate, which uses the `DATABASE_URL` environment variable (from the parent folder's dotenv `.env` file) to connect to a database.
   
 The dotenv file `.env` from the parent directory will also be used while developing this backend application as there is no development-specific environment configuration created for now.
