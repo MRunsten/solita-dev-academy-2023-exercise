@@ -58,6 +58,8 @@
 		box-sizing: border-box;
 		flex-direction: column;
 		background: $menu-background;
+		box-shadow: 0 0 8px black;
+		z-index: 1;
 	}
 
 	h1 {
