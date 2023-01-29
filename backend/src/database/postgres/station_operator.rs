@@ -67,6 +67,9 @@ mod tests {
     use crate::model::station_operator::StationOperator;
     use sqlx::PgPool;
 
+    // The following function is currently only used during tests, but it can be pulled
+    // from the tests module if the actual application needs the get_by_id() function
+    // in the future.
     pub async fn get_by_id(
         db: &PgPool,
         operator_id: model::station_operator::Id,

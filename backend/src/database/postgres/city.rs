@@ -58,7 +58,9 @@ mod tests {
     use crate::model::city::City;
     use sqlx::PgPool;
 
-    #[allow(dead_code)]
+    // The following function is currently only used during tests, but it can be pulled
+    // from the tests module if the actual application needs the get_by_id() function
+    // in the future.
     pub async fn get_by_id(db: &PgPool, city_id: city::Id) -> DatabaseResult<City> {
         let record = sqlx::query!(
             "SELECT name_finnish, name_swedish FROM cities WHERE city_id = $1",

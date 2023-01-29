@@ -140,7 +140,9 @@ mod tests {
     use crate::model::{city, station, station_operator};
     use crate::unit::{Coordinate, Latitude, Longitude};
 
-    #[allow(dead_code)]
+    // The following function is currently only used during tests, but it can be pulled
+    // from the tests module if the actual application needs the get_by_id() function
+    // in the future.
     pub async fn get_by_id(db: &PgPool, station_id: station::Id) -> DatabaseResult<Station> {
         let record = sqlx::query!(
             r#"
@@ -244,7 +246,6 @@ mod tests {
         Ok(())
     }
 
-    #[allow(dead_code)]
     fn get_mock_station(
         station_id: station::Id,
         city_id: city::Id,
