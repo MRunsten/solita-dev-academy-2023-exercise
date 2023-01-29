@@ -235,32 +235,6 @@
     },
     "query": "DROP TABLE IF EXISTS cities;\n"
   },
-  "52acd944cc4abb5b68a41bbb1f1323bf70c4fc283488a3e41e6a92bd99c4523d": {
-    "describe": {
-      "columns": [
-        {
-          "name": "name_finnish",
-          "ordinal": 0,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "name_swedish",
-          "ordinal": 1,
-          "type_info": "Varchar"
-        }
-      ],
-      "nullable": [
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Int4"
-        ]
-      }
-    },
-    "query": "SELECT name_finnish, name_swedish FROM cities WHERE city_id = $1"
-  },
   "5a280890f630e9c721cc92fae7da2023f4e766a3654d70e4a1bc2e1272e17778": {
     "describe": {
       "columns": [],
@@ -311,16 +285,6 @@
     },
     "query": "DROP TABLE IF EXISTS station_operators;\n"
   },
-  "8142fa2449323c231c875bc498e4852d32b9f723bbdbd2c7214ab43b0263d47e": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": []
-      }
-    },
-    "query": "DROP TABLE IF EXISTS journeys;\r\n"
-  },
   "8865c8e5c6768e4e0bf6af666485c21337262c4218cf711d7ed5e17d1d543725": {
     "describe": {
       "columns": [],
@@ -330,80 +294,6 @@
       }
     },
     "query": "REFRESH MATERIALIZED VIEW station_view WITH DATA"
-  },
-  "8a9ae0efbf4ec855cd8b048c4fc79ee630e74947963ae6585c289aefd5376ed3": {
-    "describe": {
-      "columns": [
-        {
-          "name": "city_id",
-          "ordinal": 0,
-          "type_info": "Int4"
-        },
-        {
-          "name": "operator_id",
-          "ordinal": 1,
-          "type_info": "Int4"
-        },
-        {
-          "name": "name_finnish",
-          "ordinal": 2,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "name_swedish",
-          "ordinal": 3,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "name_english",
-          "ordinal": 4,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "address_finnish",
-          "ordinal": 5,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "address_swedish",
-          "ordinal": 6,
-          "type_info": "Varchar"
-        },
-        {
-          "name": "latitude_north",
-          "ordinal": 7,
-          "type_info": "Float8"
-        },
-        {
-          "name": "longitude_east",
-          "ordinal": 8,
-          "type_info": "Float8"
-        },
-        {
-          "name": "capacity",
-          "ordinal": 9,
-          "type_info": "Int4"
-        }
-      ],
-      "nullable": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
-      "parameters": {
-        "Left": [
-          "Int4"
-        ]
-      }
-    },
-    "query": "\n        SELECT\n\n        city_id,\n        operator_id,\n\n        name_finnish,\n        name_swedish,\n        name_english,\n\n        address_finnish,\n        address_swedish,\n\n        latitude_north,\n        longitude_east,\n\n        capacity\n\n        FROM stations\n        WHERE station_id = $1\n        "
   },
   "96dcd7af05d72bb4a026e9c125c61c3b5ac27acfd292570e5f55264c1a5d7c1f": {
     "describe": {
@@ -435,6 +325,16 @@
       }
     },
     "query": "INSERT INTO cities (name_finnish, name_swedish) VALUES ($1, $2) RETURNING city_id"
+  },
+  "aa6065eaadbca1f0e9cb98a77e3355e82f074c8c0dd4e9b256d1cbf75355f69e": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "DROP TABLE IF EXISTS journeys;\n"
   },
   "bc7658f8841015deb211906b0547683e47a784a2a4bec7eade9363acb8f36e46": {
     "describe": {
