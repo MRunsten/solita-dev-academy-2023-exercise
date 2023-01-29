@@ -1,9 +1,9 @@
 use crate::BoxedError;
+use axum::http::Method;
 use axum::routing::get;
 use axum::Router;
 use serde::Deserialize;
 use std::env;
-use axum::http::Method;
 use tower::ServiceBuilder;
 use tower_http::cors::{Any, CorsLayer};
 
@@ -34,18 +34,14 @@ fn define_routes(db: Database) -> Router {
         .allow_methods([Method::GET])
         .allow_origin(Any);
 
-    let station_api = Router::new()
-        .route("/:id", get(station::single));
-
-    let stations_api = Router::new()
-        .route("/", get(station::list));
-
+    let station_api = Router::new().route("/:id", get(station::single));
+    let stations_api = Router::new().route("/", get(station::list));
     let journeys_api = Router::new().route("/", get(journey::list));
 
     let api = Router::new()
-        .nest("/journeys", journeys_api)
         .nest("/station", station_api)
         .nest("/stations", stations_api)
+        .nest("/journeys", journeys_api)
         .layer(ServiceBuilder::new().layer(cors));
 
     Router::new().nest("/api", api).with_state(db)

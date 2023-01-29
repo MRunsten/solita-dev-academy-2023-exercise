@@ -1,6 +1,6 @@
-use serde::Serialize;
 use crate::model::{city, station_operator};
 use crate::unit::Coordinate;
+use serde::Serialize;
 
 pub type Capacity = i32;
 

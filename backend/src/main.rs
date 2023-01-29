@@ -18,27 +18,27 @@ async fn main() -> Result<(), BoxedError> {
 
     match env::var("CITY_BICYCLES_IN_PRODUCTION").is_ok() {
         true => {
-            tracing::info!("Running in PRODUCTION mode")
-        },
+            tracing::info!("Running in PRODUCTION mode");
+        }
         false => {
             tracing::info!("Running in DEVELOPMENT mode");
-            dotenv().expect("fatal error: .env file not found from the current or parent directory");
-        },
+
+            let message = "fatal error: .env file not found from the current or parent directory";
+            dotenv().expect(message);
+        }
     };
 
     let db = database::connect().await?;
 
-    let reinitialize_database =
+    let reload_database =
         env::var("RELOAD_DATABASE").expect("Environment variable RELOAD_DATABASE was undefined");
 
-    match reinitialize_database.as_str() {
-        "true" => empty_and_initialize_db(&db).await?,
+    match reload_database.as_str() {
+        "true" => empty_and_reload_database(&db).await?,
         "false" => (),
-        other => {
-            tracing::error!(
-                "Invalid environment variable RELOAD_DATABASE='{}', expected=true|false",
-                other
-            );
+        invalid_setting_value => {
+            let message = "Invalid environment variable RELOAD_DATABASE='{}', expected=true|false";
+            tracing::error!(message, invalid_setting_value);
         }
     }
 
@@ -48,17 +48,15 @@ async fn main() -> Result<(), BoxedError> {
         "true" => api::run(db).await?,
         "false" => (),
         other => {
-            tracing::error!(
-                "Invalid environment variable API_RUN='{}', expected=true|false",
-                other
-            );
+            let message = "Invalid environment variable API_RUN='{}', expected=true|false";
+            tracing::error!(message, other);
         }
     }
 
     Ok(())
 }
 
-async fn empty_and_initialize_db(db: &Database) -> Result<(), BoxedError> {
+async fn empty_and_reload_database(db: &Database) -> Result<(), BoxedError> {
     tracing::info!("Emptying and reloading database");
 
     let stations_url = env::var("LOAD_STATIONS_FROM")

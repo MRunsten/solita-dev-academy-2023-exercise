@@ -4,26 +4,32 @@ use crate::database::{DatabaseError, DatabaseResult};
 use crate::model::station_operator;
 use crate::model::station_operator::StationOperator;
 
-pub async fn add(db: &PgPool, name: station_operator::Name) -> DatabaseResult<station_operator::Id> {
+pub async fn add(
+    db: &PgPool,
+    name: station_operator::Name,
+) -> DatabaseResult<station_operator::Id> {
     let operator_id = sqlx::query!(
-            "INSERT INTO station_operators (operator_name) VALUES ($1) RETURNING operator_id",
-            &name,
-        )
-        .fetch_one(db)
-        .await?
-        .operator_id;
+        "INSERT INTO station_operators (operator_name) VALUES ($1) RETURNING operator_id",
+        &name,
+    )
+    .fetch_one(db)
+    .await?
+    .operator_id;
 
     Ok(operator_id)
 }
 
-pub async fn get_by_name(db: &PgPool, operator_name: station_operator::Name) -> DatabaseResult<StationOperator> {
+pub async fn get_by_name(
+    db: &PgPool,
+    operator_name: station_operator::Name,
+) -> DatabaseResult<StationOperator> {
     let operator_id = sqlx::query!(
-            "SELECT operator_id FROM station_operators WHERE operator_name = $1",
-            &operator_name,
-        )
-        .fetch_one(db)
-        .await?
-        .operator_id;
+        "SELECT operator_id FROM station_operators WHERE operator_name = $1",
+        &operator_name,
+    )
+    .fetch_one(db)
+    .await?
+    .operator_id;
 
     Ok(StationOperator {
         id: operator_id,
@@ -31,13 +37,15 @@ pub async fn get_by_name(db: &PgPool, operator_name: station_operator::Name) -> 
     })
 }
 
-pub async fn get_or_add_by_name(db: &PgPool, operator_name: station_operator::Name) -> DatabaseResult<StationOperator> {
+pub async fn get_or_add_by_name(
+    db: &PgPool,
+    operator_name: station_operator::Name,
+) -> DatabaseResult<StationOperator> {
     let result = get_by_name(db, operator_name.clone()).await;
 
     let station_operator = match result {
         Ok(station_operator) => station_operator,
         Err(DatabaseError::RowNotFound) => {
-
             let new_station_operator = StationOperator {
                 id: add(db, operator_name.clone()).await?,
                 name: operator_name,
@@ -45,7 +53,7 @@ pub async fn get_or_add_by_name(db: &PgPool, operator_name: station_operator::Na
 
             new_station_operator
         }
-        Err(e) => return Err(e)
+        Err(e) => return Err(e),
     };
 
     Ok(station_operator)
@@ -53,19 +61,22 @@ pub async fn get_or_add_by_name(db: &PgPool, operator_name: station_operator::Na
 
 #[cfg(test)]
 mod tests {
-    use sqlx::PgPool;
-    use crate::model;
-    use crate::database::DatabaseResult;
     use crate::database::station_operator;
+    use crate::database::DatabaseResult;
+    use crate::model;
     use crate::model::station_operator::StationOperator;
+    use sqlx::PgPool;
 
-    pub async fn get_by_id(db: &PgPool, operator_id: model::station_operator::Id) -> DatabaseResult<StationOperator> {
+    pub async fn get_by_id(
+        db: &PgPool,
+        operator_id: model::station_operator::Id,
+    ) -> DatabaseResult<StationOperator> {
         let record = sqlx::query!(
             "SELECT operator_name FROM station_operators WHERE operator_id = $1",
             &operator_id
         )
-            .fetch_one(db)
-            .await?;
+        .fetch_one(db)
+        .await?;
 
         Ok(StationOperator {
             id: operator_id,
@@ -108,4 +119,3 @@ mod tests {
         Ok(())
     }
 }
-

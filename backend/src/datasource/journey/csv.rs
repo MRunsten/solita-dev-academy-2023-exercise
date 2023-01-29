@@ -1,12 +1,12 @@
 use crate::database;
 use crate::database::{Database, DatabaseResult, JourneyInsertResult};
 use crate::datasource::DataSourceResult;
+use crate::model::journey::JourneyInsert;
+use crate::model::station;
 use chrono::{NaiveDate, NaiveDateTime};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::io::Read;
-use crate::model::journey::JourneyInsert;
-use crate::model::station;
 
 use crate::unit::{Meters, Seconds};
 
@@ -14,7 +14,7 @@ use crate::unit::{Meters, Seconds};
 #[serde(untagged)]
 enum PossibleDateTypes {
     OnlyDate(NaiveDate),
-    WithTime(NaiveDateTime)
+    WithTime(NaiveDateTime),
 }
 
 #[derive(Deserialize, Debug)]
@@ -56,7 +56,7 @@ where
     for maybe_csv_journey in csv_journeys.into_iter() {
         if let Err(err) = maybe_csv_journey {
             tracing::warn!("(skipping csv row): {err}");
-            continue
+            continue;
         }
 
         let csv_journey = maybe_csv_journey.unwrap();
@@ -108,31 +108,30 @@ where
     Ok(database::journey::add_multiple(db, parsed_journeys).await?)
 }
 
-async fn get_valid_stations_ids(
-    db: &Database,
-) -> DatabaseResult<HashSet<station::Id>> {
-
-    let valid_stations = database::station::get_all(db).await?.into_iter().map(|station| station.id);
+async fn get_valid_stations_ids(db: &Database) -> DatabaseResult<HashSet<station::Id>> {
+    let valid_stations = database::station::get_all(db)
+        .await?
+        .into_iter()
+        .map(|station| station.id);
 
     Ok(HashSet::from_iter(valid_stations))
 }
 
-
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
-    use sqlx::PgPool;
-    use tokio::time;
     use crate::BoxedError;
+    use sqlx::PgPool;
+    use std::time::Duration;
+    use tokio::time;
 
     #[sqlx::test]
     async fn disallow_less_than_10_second(db: PgPool) -> Result<(), BoxedError> {
         use std::fs::File;
 
-        use crate::model;
         use crate::database;
-        use crate::datasource;
         use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
+        use crate::datasource;
+        use crate::model;
 
         database::initialize(&db).await?;
 
@@ -140,7 +139,9 @@ mod tests {
         let stations_added = datasource::station::csv::update(&db, station_test_data).await?;
         assert_eq!(stations_added, 2);
 
-        let journey_test_data = File::open("./tests/pipeline_test_data/journey_disallows_less_than_10_second.csv")?;
+        let journey_test_data =
+            File::open("./tests/pipeline_test_data/journey_disallows_less_than_10_second.csv")?;
+
         let journeys_added = datasource::journey::csv::update(&db, journey_test_data).await?;
         assert_eq!(journeys_added.rows_had, 1);
         assert_eq!(journeys_added.new_rows_inserted, 1);
@@ -168,10 +169,10 @@ mod tests {
     async fn disallow_less_than_10_meter(db: PgPool) -> Result<(), BoxedError> {
         use std::fs::File;
 
-        use crate::model;
         use crate::database;
-        use crate::datasource;
         use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
+        use crate::datasource;
+        use crate::model;
 
         database::initialize(&db).await?;
 
@@ -179,7 +180,9 @@ mod tests {
         let stations_added = datasource::station::csv::update(&db, station_test_data).await?;
         assert_eq!(stations_added, 2);
 
-        let journey_test_data = File::open("./tests/pipeline_test_data/journey_disallows_less_than_10_meter.csv")?;
+        let journey_test_data =
+            File::open("./tests/pipeline_test_data/journey_disallows_less_than_10_meter.csv")?;
+
         let journeys_added = datasource::journey::csv::update(&db, journey_test_data).await?;
         assert_eq!(journeys_added.rows_had, 1);
         assert_eq!(journeys_added.new_rows_inserted, 1);
@@ -196,9 +199,9 @@ mod tests {
         let journeys = database::view::journey_list(&db, &params).await?;
         assert_eq!(journeys.len(), 1);
 
-        journeys.iter().for_each(|j| {
-           assert!(j.distance_kilometers >= 0.0099)
-        });
+        journeys
+            .iter()
+            .for_each(|j| assert!(j.distance_kilometers >= 0.0099));
 
         Ok(())
     }
@@ -207,10 +210,10 @@ mod tests {
     async fn disallow_invalid_stations(db: PgPool) -> Result<(), BoxedError> {
         use std::fs::File;
 
-        use crate::model;
         use crate::database;
-        use crate::datasource;
         use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
+        use crate::datasource;
+        use crate::model;
 
         database::initialize(&db).await?;
 
@@ -218,7 +221,9 @@ mod tests {
         let stations_added = datasource::station::csv::update(&db, station_test_data).await?;
         assert_eq!(stations_added, 2);
 
-        let journey_test_data = File::open("./tests/pipeline_test_data/journey_disallows_invalid_stations.csv")?;
+        let journey_test_data =
+            File::open("./tests/pipeline_test_data/journey_disallows_invalid_stations.csv")?;
+
         let journeys_added = datasource::journey::csv::update(&db, journey_test_data).await?;
         assert_eq!(journeys_added.rows_had, 1);
         assert_eq!(journeys_added.new_rows_inserted, 1);
@@ -247,10 +252,10 @@ mod tests {
     async fn disallow_duplicates(db: PgPool) -> Result<(), BoxedError> {
         use std::fs::File;
 
-        use crate::model;
         use crate::database;
-        use crate::datasource;
         use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
+        use crate::datasource;
+        use crate::model;
 
         database::initialize(&db).await?;
 
@@ -258,7 +263,8 @@ mod tests {
         let stations_added = datasource::station::csv::update(&db, station_test_data).await?;
         assert_eq!(stations_added, 2);
 
-        let journey_test_data = File::open("./tests/pipeline_test_data/journey_disallows_duplicates.csv")?;
+        let journey_test_data =
+            File::open("./tests/pipeline_test_data/journey_disallows_duplicates.csv")?;
         let journeys_added = datasource::journey::csv::update(&db, journey_test_data).await?;
         assert_eq!(journeys_added.rows_had, 3);
         assert_eq!(journeys_added.new_rows_inserted, 1);

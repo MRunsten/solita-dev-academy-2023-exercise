@@ -16,7 +16,7 @@ impl From<&Latitude> for f64 {
     fn from(value: &Latitude) -> Self {
         *match value {
             Latitude::North(gps_coordinate) => gps_coordinate,
-            Latitude::South(gps_coordinate) => gps_coordinate
+            Latitude::South(gps_coordinate) => gps_coordinate,
         }
     }
 }
@@ -31,7 +31,7 @@ impl From<&Longitude> for f64 {
     fn from(value: &Longitude) -> Self {
         *match value {
             Longitude::East(gps_coordinate) => gps_coordinate,
-            Longitude::West(gps_coordinate) => gps_coordinate
+            Longitude::West(gps_coordinate) => gps_coordinate,
         }
     }
 }

@@ -59,9 +59,7 @@ where
                 })
                 .unwrap(), // Note: All unique cities are within the hashmap or an error has been returned.
 
-            operator_id: *operator_to_id
-                .get(&csv_station.operaattor)
-                .unwrap(), // Note: All unique operators are within the hashmap or an error has been returned.
+            operator_id: *operator_to_id.get(&csv_station.operaattor).unwrap(), // Note: All unique operators are within the hashmap or an error has been returned.
 
             name: station::Name {
                 finnish: csv_station.nimi,
@@ -131,10 +129,9 @@ async fn get_operator_name_to_id_cache(
     );
 
     for operator_name in unique_operators.iter() {
-        let operator_id =
-            database::station_operator::get_or_add_by_name(db, operator_name.clone())
-                .await?
-                .id;
+        let operator_id = database::station_operator::get_or_add_by_name(db, operator_name.clone())
+            .await?
+            .id;
 
         operator_name_to_id.insert(operator_name.clone(), operator_id);
     }
@@ -144,18 +141,18 @@ async fn get_operator_name_to_id_cache(
 
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
-    use sqlx::PgPool;
-    use tokio::time;
     use crate::BoxedError;
+    use sqlx::PgPool;
+    use std::time::Duration;
+    use tokio::time;
 
     #[sqlx::test]
     async fn data_pipeline(db: PgPool) -> Result<(), BoxedError> {
         use std::fs::File;
 
-        use crate::model;
         use crate::database;
         use crate::datasource;
+        use crate::model;
 
         database::initialize(&db).await?;
 

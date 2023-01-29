@@ -1,10 +1,10 @@
+use crate::api::Pagination;
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::response::Response;
 use axum::Json;
 use std::cmp;
-use crate::api::Pagination;
 
 use crate::database;
 use crate::database::view::{JourneyListOrder, JourneyListParams, OrderDirection};
@@ -22,21 +22,17 @@ pub async fn list(pagination: Query<Pagination>, State(db): State<Database>) -> 
         page: pagination.page.unwrap_or_default(), // Default for u32 is 0.
         limit: cmp::min(
             LIST_MAX_PER_PAGE,
-            pagination.limit.unwrap_or(DEFAULT_LIST_PER_PAGE)
+            pagination.limit.unwrap_or(DEFAULT_LIST_PER_PAGE),
         ),
     };
 
     match database::view::journey_list(&db, &params).await {
-        Ok(journey_list) => {
-            return (StatusCode::OK, Json(journey_list)).into_response()
-        },
+        Ok(journey_list) => return (StatusCode::OK, Json(journey_list)).into_response(),
         Err(err) => {
             tracing::info!("({:?}) {err}", params);
         }
     }
 
-    (
-        StatusCode::INTERNAL_SERVER_ERROR,
-        Json("Failed to retrieve journey list from database."),
-    ).into_response()
+    let error_message = "Failed to retrieve journey list from database.";
+    (StatusCode::INTERNAL_SERVER_ERROR, Json(error_message)).into_response()
 }

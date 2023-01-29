@@ -3,8 +3,8 @@ pub mod journey;
 pub mod station;
 pub mod station_operator;
 
-use sqlx::{ConnectOptions, PgPool};
 use sqlx::postgres::PgConnectOptions;
+use sqlx::{ConnectOptions, PgPool};
 use std::env;
 
 use crate::database::DatabaseResult;
@@ -21,7 +21,8 @@ pub async fn connect() -> DatabaseResult<Database> {
 
     let pool = sqlx::pool::PoolOptions::new()
         .max_connections(5)
-        .connect_with(connect_options).await?;
+        .connect_with(connect_options)
+        .await?;
 
     initialize(&pool).await?;
 
@@ -117,21 +118,33 @@ async fn drop_views(db: &Database) -> DatabaseResult<()> {
 }
 
 pub async fn refresh_views(db: &Database) -> DatabaseResult<()> {
-    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW journey_list_view WITH DATA").execute(db).await?;
-    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_list_view WITH DATA").execute(db).await?;
-    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_view WITH DATA").execute(db).await?;
+    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW journey_list_view WITH DATA")
+        .execute(db)
+        .await?;
+
+    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_list_view WITH DATA")
+        .execute(db)
+        .await?;
+
+    let _ = sqlx::query!("REFRESH MATERIALIZED VIEW station_view WITH DATA")
+        .execute(db)
+        .await?;
 
     Ok(())
 }
 
 async fn create_indices(db: &Database) -> DatabaseResult<()> {
-    let _ = sqlx::query!("CREATE INDEX IF NOT EXISTS departure_date_index ON journey_list_view(departure_date)")
-        .execute(db)
-        .await?;
+    let _ = sqlx::query!(
+        "CREATE INDEX IF NOT EXISTS departure_date_index ON journey_list_view(departure_date)"
+    )
+    .execute(db)
+    .await?;
 
-    let _ = sqlx::query!("CREATE INDEX IF NOT EXISTS return_date_index ON journey_list_view(return_date)")
-        .execute(db)
-        .await?;
+    let _ = sqlx::query!(
+        "CREATE INDEX IF NOT EXISTS return_date_index ON journey_list_view(return_date)"
+    )
+    .execute(db)
+    .await?;
 
     Ok(())
 }

@@ -1,22 +1,20 @@
-use sqlx::{Execute, Postgres, QueryBuilder, Row};
-use crate::database::{Database, DatabaseResult, view};
+use crate::database::{view, Database, DatabaseResult};
 use crate::model::city;
 use crate::station;
+use sqlx::{Execute, Postgres, QueryBuilder, Row};
 
 pub async fn station_list(
     db: &Database,
     params: &view::StationListParams,
 ) -> DatabaseResult<Vec<view::StationListItem>> {
-
     // Warning: The following query uses sqlx::query instead of the sqlx::query! macro. This means
     // that it is not checked during compile time against a database and may lead to runtime issues.
     // This is because of dynamic parameters.
     //
     // Warning: Never edit the following query string to contain arbitrary data (such as user input)
     // as this leads to SQL injections.
-    let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
-        "SELECT * FROM station_list_view ORDER BY "
-    );
+    let mut query_builder: QueryBuilder<Postgres> =
+        QueryBuilder::new("SELECT * FROM station_list_view ORDER BY ");
 
     let mut query_str_tmp = query_builder.separated(" ");
     query_str_tmp.push(params.order_by.to_string());
@@ -30,9 +28,7 @@ pub async fn station_list(
 
     let query_str = query_builder.build().sql();
 
-    let rows = sqlx::query(query_str)
-        .fetch_all(db)
-        .await?;
+    let rows = sqlx::query(query_str).fetch_all(db).await?;
 
     let mut station_list_view = Vec::new();
 

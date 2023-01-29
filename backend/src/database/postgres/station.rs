@@ -1,8 +1,8 @@
 use sqlx::PgPool;
 
 use crate::database::DatabaseResult;
+use crate::model::station;
 use crate::model::station::Station;
-use crate::model::{station};
 use crate::unit::{Coordinate, Latitude, Longitude};
 
 pub async fn add_multiple(db: &PgPool, stations: Vec<Station>) -> DatabaseResult<u64> {
@@ -135,14 +135,14 @@ mod tests {
     use sqlx::PgPool;
 
     use crate::database::DatabaseResult;
-    use crate::model::{city, station, station_operator};
     use crate::model::station::Station;
+    use crate::model::{city, station, station_operator};
     use crate::unit::{Coordinate, Latitude, Longitude};
 
     #[allow(dead_code)]
     pub async fn get_by_id(db: &PgPool, station_id: station::Id) -> DatabaseResult<Station> {
         let record = sqlx::query!(
-        r#"
+            r#"
         SELECT
 
         city_id,
@@ -163,10 +163,10 @@ mod tests {
         FROM stations
         WHERE station_id = $1
         "#,
-        i32::from(&station_id),
-    )
-            .fetch_one(db)
-            .await?;
+            i32::from(&station_id),
+        )
+        .fetch_one(db)
+        .await?;
 
         let station = Station {
             id: station_id,
@@ -215,10 +215,14 @@ mod tests {
         let station_id42 = station::Id(42);
         let station_id123 = station::Id(123);
 
-        let station42 = get_mock_station(station_id42.clone(), city_id.clone(), operator_id.clone());
-        let station123 = get_mock_station(station_id123.clone(), city_id.clone(), operator_id.clone());
+        let station42 =
+            get_mock_station(station_id42.clone(), city_id.clone(), operator_id.clone());
+        let station123 =
+            get_mock_station(station_id123.clone(), city_id.clone(), operator_id.clone());
 
-        let rows = database::station::add_multiple(&db, vec![station42.clone(), station123.clone()]).await?;
+        let rows =
+            database::station::add_multiple(&db, vec![station42.clone(), station123.clone()])
+                .await?;
 
         assert_eq!(rows, 2);
 

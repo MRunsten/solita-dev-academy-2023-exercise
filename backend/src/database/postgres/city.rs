@@ -6,26 +6,26 @@ use crate::model::city::City;
 
 pub async fn add(db: &PgPool, name: city::Name) -> DatabaseResult<city::Id> {
     let city_id = sqlx::query!(
-            "INSERT INTO cities (name_finnish, name_swedish) VALUES ($1, $2) RETURNING city_id",
-            &name.finnish,
-            &name.swedish
-        )
-        .fetch_one(db)
-        .await?
-        .city_id;
+        "INSERT INTO cities (name_finnish, name_swedish) VALUES ($1, $2) RETURNING city_id",
+        &name.finnish,
+        &name.swedish
+    )
+    .fetch_one(db)
+    .await?
+    .city_id;
 
     Ok(city_id)
 }
 
 pub async fn get_by_name(db: &PgPool, city_name: city::Name) -> DatabaseResult<City> {
     let city_id = sqlx::query!(
-            "SELECT city_id FROM cities WHERE name_finnish = $1 and name_swedish = $2",
-            &city_name.finnish,
-            &city_name.swedish,
-        )
-        .fetch_one(db)
-        .await?
-        .city_id;
+        "SELECT city_id FROM cities WHERE name_finnish = $1 and name_swedish = $2",
+        &city_name.finnish,
+        &city_name.swedish,
+    )
+    .fetch_one(db)
+    .await?
+    .city_id;
 
     Ok(City {
         id: city_id,
@@ -46,17 +46,17 @@ pub async fn get_or_add_by_name(db: &PgPool, city_name: city::Name) -> DatabaseR
 
             new_city
         }
-        Err(e) => return Err(e)
+        Err(e) => return Err(e),
     };
 
     Ok(city)
 }
 
 mod tests {
-    use sqlx::PgPool;
     use crate::database::DatabaseResult;
     use crate::model::city;
     use crate::model::city::City;
+    use sqlx::PgPool;
 
     #[allow(dead_code)]
     pub async fn get_by_id(db: &PgPool, city_id: city::Id) -> DatabaseResult<City> {
@@ -64,8 +64,8 @@ mod tests {
             "SELECT name_finnish, name_swedish FROM cities WHERE city_id = $1",
             &city_id
         )
-            .fetch_one(db)
-            .await?;
+        .fetch_one(db)
+        .await?;
 
         Ok(City {
             id: city_id,

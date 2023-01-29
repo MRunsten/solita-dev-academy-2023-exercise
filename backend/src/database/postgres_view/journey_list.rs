@@ -1,7 +1,7 @@
-use chrono::Utc;
 use crate::database::view::JourneyListItemStation;
 use crate::database::{view, Database, DatabaseResult};
 use crate::station;
+use chrono::Utc;
 use sqlx::{Execute, Postgres, QueryBuilder, Row};
 
 pub async fn journey_list(
@@ -47,7 +47,7 @@ pub async fn journey_list(
                 },
             },
             return_station: JourneyListItemStation {
-                station_id:station::Id(row.try_get("return_station_id")?),
+                station_id: station::Id(row.try_get("return_station_id")?),
                 name: station::Name {
                     finnish: row.try_get("return_station_name_finnish")?,
                     swedish: row.try_get("return_station_name_swedish")?,
