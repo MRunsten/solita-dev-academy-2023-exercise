@@ -19,6 +19,7 @@ This repository contains my solution to the Solita Dev Academy 2023 [pre-assignm
 Clone or download the repository
 ```
 git clone https://github.com/MRunsten/solita-dev-academy-2023-exercise
+cd solita-dev-academy-2023-exercise
 ```
 Copy or rename the included dotfile `.env.example` to `.env`.
 
@@ -39,10 +40,13 @@ When building and running the application for the first time, it is suggested to
 ```
 docker compose up [-d]
 ```
+When building the application, the backend build process may seem to be stuck on `Updating crates.io index`, but this is expected as this is somewhat of a slow step in the backend build process.
+
+I tried a completely fresh build process of the entire service stack on my desktop computer (12-core AMD 5900x, 32GB, NVMe SSD, Gigabit fiber) which took about 2 minutes. I also tried this build process with my laptop (4-core Intel 8350U, 16GB, NVMe SSD, Wi-Fi) which took about 6 minutes.
 
 When starting up the stack, expect some errors and warnings especially from the database container while its startup status is being checked. What you should keep an eye on is the messages from the `backend-container`.
 
-Expected output example (Startup took about 1 minute as it had to download ~250mb of data and insert it to the database):
+Expected output example (startup took about 1 minute as it had to download ~250mb of data and insert it to the database. This was running on my desktop system as described above):
 ```
 mrunsten-solita-database-container       | 2023-01-29 12:10:57.336 UTC [37] FATAL:  the database system is not yet accepting connections
 mrunsten-solita-database-container       | 2023-01-29 12:10:57.336 UTC [37] DETAIL:  Consistent recovery state has not been yet reached.
