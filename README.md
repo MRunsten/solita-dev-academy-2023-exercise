@@ -6,14 +6,19 @@
 
 This repository contains my solution to the Solita Dev Academy 2023 [pre-assignment](https://github.com/solita/dev-academy-2023-exercise/blob/main/README.md).
 
-# System requirements
+# Requirements
 
-## Requirements to build and run the application
+## System requirements to build and run the application
 * [Docker](https://docs.docker.com/get-docker/)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
 ## Development requirements
 * Described in the service related subdirectories. They are not required to build and run the application.
+
+## User requirements
+* Familiarity with command line.
+* Familiarity with environment variables.
+* Suggested: Familiarity with Docker and Docker Compose.
 
 # First time setup
 Clone or download the repository
@@ -84,6 +89,10 @@ mrunsten-solita-backend-container        | 2023-01-29T12:12:01.236612Z  INFO bac
 
 While you can access the frontend service even before the backend startup has completed, expect errors, as the backend HTTP Api is not running before the message `INFO backend::api: Bicycle application backend listening on [::]:3000`. After this message the application is ready, and it should be accessible (with default configuration) at [http://localhost:3000](http://localhost:3000)
 
+If you ran the `docker compose` command without the `-d` (detach) argument, you can shut down the docker-compose stack by pressing for example CTRL+C (or CMD+C, depends on the system). If you press this key combination more than once, Docker will shut down the service containers faster (non-gracefully) (which can actually be suggested as there is currently no signal handling in the backend and frontend containers).
+
+If you ran the `docker compose` command with `-d` (detach) argument, you can shut down the docker-compose stack by running the command `docker compose down`.
+
 ## After the first run
 When using the default environment value `RELOAD_DATABASE=true`, the backend service will on startup clear (drop) all database data, redownload data based on the `LOAD_*` environment variable values, and insert the freshly downloaded data to the re-created database tables. This means that if the database has been edited in any way, changes will be lost. However, this application does currently not change the database state after the initial data loading operation.
 
@@ -100,7 +109,7 @@ docker compose build
 
 If you wish to only start a specific service, such as the database service for development purposes, you can use the command:
 ```
-docker up [-d] database-service
+docker compose up [-d] database-service
 ```
 
 If you wish to only build a single service of this application, you can use the command:
@@ -129,7 +138,7 @@ docker compose build --no-cache backend-service
     * Well performing relational database that I have also used before.
 * Frontend
   * [SvelteKit](https://kit.svelte.dev/)
-    * General interest for Svelte as it has been one of the most liked frontend frameworks for a while. SvelteKit as it provided a ready-to-use frontend development and deployment framework. I did not have meaningful prior experience using Svelte(Kit).
+    * General interest for Svelte as it has been one of the most liked frontend frameworks for a while. SvelteKit was chosen it provided a ready-to-use frontend development and deployment framework for Svelte. I did not have prior experience using Svelte(Kit).
   * [TypeScript](https://www.typescriptlang.org/)
     * I prefer type-safety for everything that is not a single use script for example.
     * I have used TypeScript before.
@@ -138,7 +147,7 @@ docker compose build --no-cache backend-service
     * Well performing HTTP server and reverse proxy that I have also used before.
 * Runtime
   * [Docker](https://www.docker.com/)
-    * containerization makes it easier to run applications. At the time being it can be also be considered to be the de-facto way to run for example web-application backends.
+    * Containerization makes it easier to run applications. At the time being it can be also be considered to be the de-facto way to run for example web-application backends.
   * [Docker compose](https://docs.docker.com/compose/)
     * Provides a simple way to run a multi-container application service stack.
     * While I have also used kubernetes before and some kubernetes distributions can be started with docker compose, kubernetes seemed like an overkill for an application like this. It could have certainly been used or configuration files could have been provided, although using kubernetes would have made the application configuration and startup more complex, especially as I currently don't have ready-made service images uploaded for example to Docker hub.
@@ -189,5 +198,5 @@ docker compose build --no-cache backend-service
   * The frontend has styling also for smaller displays.
 
 ### Notable missing features
-* TLS (HTTPS) support.
+* TLS (HTTPS) support
   * This application will often be run on local systems, where TLS configuration is often more difficult (and also somewhat unnecessary). This feature could have still been provided as a configurable option for example.
