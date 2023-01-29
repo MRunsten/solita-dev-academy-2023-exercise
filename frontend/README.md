@@ -14,7 +14,7 @@ which is short for npm install and will download and install required packages f
 
 It is suggested to start a backend service before running the frontend development server. The backend service can be run through Docker Compose or directly in development mode. However, the simple solution is to run `docker-compose up` in the parent folder as this will start all required services. Note that this will also start an old, already built version of the frontend, but this doesn't really matter for frontend development: The frontend development server will be running on a different port, but it and your browser can still access the backend api from the Docker Compose stack due to current CORS (Cross-Origin Resource Sharing) configuration on the backend service.
 
-ote that running the backend also requires a database service or server to be running (for example via docker compose).
+Note that running the backend also requires a database service or server to be running (for example via docker compose).
 
 The frontend development server can be started without any backend running, but this will mostly show errors when viewed in browser.
 
