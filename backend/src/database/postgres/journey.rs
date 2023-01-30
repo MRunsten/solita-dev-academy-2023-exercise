@@ -73,7 +73,7 @@ pub async fn add_multiple(
         .await?;
 
     copy.send(csv_data).await?;
-    let rows = copy.finish().await?; // TODO Fix row counting after dropping uniques.
+    let rows = copy.finish().await?;
 
     let insert_result =
         sqlx::query("INSERT INTO journeys SELECT * FROM tmp_journeys ON CONFLICT DO NOTHING")
